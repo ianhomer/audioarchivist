@@ -2,12 +2,22 @@
 
 Collection of Utilities to Ease Management of Audio Assets
 
-# Install locally
+# TL;DR;
 
 install
 
-    pip3 install -e ameta
+    pip3 install -e src
 
-and run in a directory with audio files
+report on audio meta data
 
     ameta
+
+and convert to release format
+
+    aconvert
+
+# Creating reference files for testings
+
+To create a variety of formats for testing use
+
+    atest
