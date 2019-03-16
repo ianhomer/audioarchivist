@@ -1,10 +1,10 @@
 import sys
-from pathlib import Path
 import os
 import ffmpeg
 
 from destination import Destination
 from channels import Channels
+from song import Song
 
 replace = True
 quiet = True
@@ -41,29 +41,21 @@ def run():
     if not os.path.exists(audioIn):
         print(f"File {audioIn} does not exist")
         return
-    path = Path(audioIn)
-    album = path.parent.resolve().name
-    parts = path.stem.split('-')
-    title = parts[0].strip()
-    artist = parts[1].strip() if len(parts) > 1 else "unknown"
-    print(f"Converting audio files for testing : {audioIn} : {title} : {artist} : {album}")
-    if not os.path.exists(title):
-        print(f"Making directory {title}")
-        os.makedirs(title)
+    song = Song(audioIn)
+    print(f"Converting audio files for testing : {audioIn} : {song}")
+    if not os.path.exists(song.title):
+        print(f"Making directory {song.title}")
+        os.makedirs(song.title)
 
     for destination in destinations:
         for channels in channelsList:
             ffmpegArgs = {
                 **destination.ffmpegArgs,
                 **channels.ffmpegArgs,
-                **{
-                    'metadata':f"title={title}",
-                    'metadata:':f"artist={artist}",
-                    'metadata:g':f"album={album}",
-                }
+                **song.ffmpegArgs
             }
             print(f"Converting {destination} : {channels} : {ffmpegArgs}")
-            outFile=f"{title}/{title} - {channels} {destination.variationName}.{destination.ext}"
+            outFile=f"{song.title}/{song.title} - {channels} {destination.variationName}.{destination.ext}"
             (
                 ffmpeg
                     .input(audioIn)
