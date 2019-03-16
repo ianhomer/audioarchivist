@@ -1,7 +1,7 @@
 import hiyapyco
 from pathlib import Path
 
-METAFILENAME="meta.props"
+METAFILENAME="meta.yaml"
 MAXDEPTH=5
 
 def _Meta__findMetaFiles(path, depth):

@@ -55,7 +55,7 @@ def run():
                 **song.ffmpegArgs
             }
             print(f"Converting {destination} : {channels} : {ffmpegArgs}")
-            outFile=f"{song.title}/{song.title} - {channels} {destination.variationName}.{destination.ext}"
+            outFile=f"{song.title}/{song.title} - {song.artist} - {channels} {destination.variationName}.{destination.ext}"
             (
                 ffmpeg
                     .input(audioIn)

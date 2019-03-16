@@ -24,7 +24,7 @@ To create a variety of formats for testing use
 
 # Local configuration of meta metadata
 
-Create a meta.props file in current directory or parent directory to define
+Create a meta.yaml file in current directory or parent directory to define
 artist and album metadata, e.g
 
     song:

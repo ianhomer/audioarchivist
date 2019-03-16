@@ -50,7 +50,7 @@ def defaultHandler(file):
 
 def run():
     print(f"{'name':50s} : {'ext':4s} : {'kb/s':>5s} : {'kb':>5s} : {'s':>5s} : " +
-        f"{'artist':10s} : {'title':15s} : album")
+        f"{'artist':10s} : {'title':30s} : album")
     print(150*"-")
     files.sort()
     lastParent = ""
@@ -69,4 +69,4 @@ def run():
         print(f"{stem:50s} : {ext:4s} : {meta['bitrate']:5d} : " +
             f"{filesize:5d} :" +
             f"{meta['length']:5d} : {meta['artist']:10s} : " +
-            f"{meta['title']:15s} : {meta['album']}")
+            f"{meta['title']:30s} : {meta['album']}")
