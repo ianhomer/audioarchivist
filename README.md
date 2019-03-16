@@ -21,3 +21,11 @@ and convert to release format
 To create a variety of formats for testing use
 
     atest
+
+# Local configuration of meta metadata
+
+Create a meta.props file in current directory or parent directory to define
+artist and album metadata, e.g
+
+    song:
+      artist: Me
