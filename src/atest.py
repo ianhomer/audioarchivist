@@ -3,42 +3,14 @@ from pathlib import Path
 import os
 import ffmpeg
 
+from destination import Destination
+from channels import Channels
+
 replace = True
 quiet = True
 ogg = False
 mp3 = True
 m4a = False
-
-class Destination:
-    def __repr__(self):
-        return f"{self.quality} {self.ext}"
-
-    @property
-    def variationName(self):
-        if self.ext == "ogg":
-            return f"q{self.quality}"
-        else:
-            return f"{self.quality}k"
-
-    @property
-    def ffmpegArgs(self):
-        if self.ext == "ogg":
-            return {"qscale:a":self.quality}
-        else:
-            return {"b:a":f"{self.quality}k"}
-
-    def __init__(self, ext, quality):
-        self.ext = ext
-        self.quality = quality
-
-class Channels:
-    def __repr__(self):
-        return "Mono" if self.channels == 1 else "Stereo"
-
-    def __init__(self, channels):
-        self.channels = channels
-        self.channels = channels
-
 
 destinations = []
 if ogg:
