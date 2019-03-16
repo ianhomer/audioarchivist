@@ -24,6 +24,7 @@ def run():
     (
         ffmpeg
             .input(audioIn)
+            .filter_('loudnorm')
             .output(outFile, **ffmpegArgs)
             .run(**{
                 'quiet':quiet,
