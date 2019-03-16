@@ -11,8 +11,12 @@ audioExtensions = ["mp3", "wav", "ogg"]
 
 files = []
 for (dirpath, dirnames, filenames) in os.walk("."):
-    files.extend(list(filter(lambda f : Path(f).suffix[1:] in audioExtensions, filenames)))
-    break
+    files.extend(list(
+        map(
+            lambda name : os.path.join(dirpath, name),
+            filter(lambda f : Path(f).suffix[1:] in audioExtensions, filenames))
+        )
+    )
 
 def mp3Handler(file):
     id3 = eyed3.load(file)
@@ -45,18 +49,22 @@ def defaultHandler(file):
     }
 
 def run():
-    print(f"{'name':30s} : {'ext':4s} : {'kb/s':>5s} : {'s':>5s} : " +
+    print(f"{'name':50s} : {'ext':4s} : {'kb/s':>5s} : {'s':>5s} : " +
         f"{'artist':10s} : {'title':15s} : album")
     print(80*"-")
     files.sort()
+    lastParent = ""
     for file in files:
         path = Path(file)
+        if (path.parent != lastParent):
+            print(f"- - - {path.parent}/")
+            lastParent = path.parent
         ext = path.suffix[1:]
         stem = path.stem
         meta = {
             "mp3" : mp3Handler,
             "ogg" : oggHandler
         }.get(ext, defaultHandler)(file)
-        print(f"{stem:30s} : {ext:4s} : {meta['bitrate']:5d} : " +
+        print(f"{stem:50s} : {ext:4s} : {meta['bitrate']:5d} : " +
             f"{meta['length']:5d} : {meta['artist']:10s} : " +
             f"{meta['title']:15s} : {meta['album']}")
