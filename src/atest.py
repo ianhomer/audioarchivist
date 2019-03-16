@@ -7,7 +7,7 @@ from destination import Destination
 from channels import Channels
 
 replace = True
-quiet = False
+quiet = True
 ogg = False
 mp3 = True
 m4a = False
@@ -42,8 +42,11 @@ def run():
         print(f"File {audioIn} does not exist")
         return
     path = Path(audioIn)
-    title = path.stem.split('-')[0].strip()
-    print(f"Converting audio files for testing : {audioIn} : {title}")
+    album = path.parent.resolve().name
+    parts = path.stem.split('-')
+    title = parts[0].strip()
+    artist = parts[1].strip() if len(parts) > 1 else "unknown"
+    print(f"Converting audio files for testing : {audioIn} : {title} : {artist} : {album}")
     if not os.path.exists(title):
         print(f"Making directory {title}")
         os.makedirs(title)
@@ -54,9 +57,9 @@ def run():
                 **destination.ffmpegArgs,
                 **channels.ffmpegArgs,
                 **{
-                    'metadata':'title=' + title,
-                    'metadata:':'artist=Me',
-                    'metadata:g':'album=X',
+                    'metadata':f"title={title}",
+                    'metadata:':f"artist={artist}",
+                    'metadata:g':f"album={album}",
                 }
             }
             print(f"Converting {destination} : {channels} : {ffmpegArgs}")
