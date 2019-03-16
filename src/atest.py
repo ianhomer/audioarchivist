@@ -8,9 +8,9 @@ from song import Song
 
 replace = True
 quiet = True
-ogg = False
+ogg = True
 mp3 = True
-m4a = False
+m4a = True
 
 destinations = []
 if ogg:
