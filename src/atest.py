@@ -7,7 +7,7 @@ from destination import Destination
 from channels import Channels
 
 replace = True
-quiet = True
+quiet = False
 ogg = False
 mp3 = True
 m4a = False
@@ -50,12 +50,21 @@ def run():
 
     for destination in destinations:
         for channels in channelsList:
-            print(f"Converting {destination} : {channels} : {destination.ffmpegArgs}")
+            ffmpegArgs = {
+                **destination.ffmpegArgs,
+                **channels.ffmpegArgs,
+                **{
+                    'metadata':'title=' + title,
+                    'metadata:':'artist=Me',
+                    'metadata:g':'album=X',
+                }
+            }
+            print(f"Converting {destination} : {channels} : {ffmpegArgs}")
             outFile=f"{title}/{title} - {channels} {destination.variationName}.{destination.ext}"
             (
                 ffmpeg
                     .input(audioIn)
-                    .output(outFile, **destination.ffmpegArgs)
+                    .output(outFile, **ffmpegArgs)
                     .run(**{
                         'quiet':quiet,
                         'overwrite_output':replace

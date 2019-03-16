@@ -4,4 +4,7 @@ class Channels:
 
     def __init__(self, channels):
         self.channels = channels
-        self.channels = channels
+
+    @property
+    def ffmpegArgs(self):
+        return {"ac":self.channels}

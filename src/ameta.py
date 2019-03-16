@@ -49,9 +49,9 @@ def defaultHandler(file):
     }
 
 def run():
-    print(f"{'name':50s} : {'ext':4s} : {'kb/s':>5s} : {'s':>5s} : " +
+    print(f"{'name':50s} : {'ext':4s} : {'kb/s':>5s} : {'kb':>5s} : {'s':>5s} : " +
         f"{'artist':10s} : {'title':15s} : album")
-    print(80*"-")
+    print(150*"-")
     files.sort()
     lastParent = ""
     for file in files:
@@ -61,10 +61,12 @@ def run():
             lastParent = path.parent
         ext = path.suffix[1:]
         stem = path.stem
+        filesize = int(os.path.getsize(file) / 1024)
         meta = {
             "mp3" : mp3Handler,
             "ogg" : oggHandler
         }.get(ext, defaultHandler)(file)
         print(f"{stem:50s} : {ext:4s} : {meta['bitrate']:5d} : " +
+            f"{filesize:5d} :" +
             f"{meta['length']:5d} : {meta['artist']:10s} : " +
             f"{meta['title']:15s} : {meta['album']}")
