@@ -37,24 +37,18 @@ def _Song__getMetadataFromFilename(filename):
     }
 
 class Song:
-    def __init__(self, filename, metadataPrecedenceFromFileNaming = False):
+    def __init__(self, filename, byName = False):
         self.filename = filename
         self.tags = _Song__getMetadataFromTags(filename)
         self.name = _Song__getMetadataFromFilename(filename)
-        if metadataPrecedenceFromFileNaming:
-            data = { **self.tags, **self.name }
-        else:
-            data = { **self.name, **self.tags }
+        data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
         self.aligned = True
         self.alt = {}
         for key in self.name.keys():
             valueByName = self.name.get(key, NA)
             valueByTag = self.tags.get(key, NA)
             if valueByName != valueByTag:
-                if metadataPrecedenceFromFileNaming:
-                    self.alt[key] = valueByTag
-                else:
-                    self.alt[key] = valueByName
+                self.alt[key] = valueByTag if byName else valueByName
                 self.aligned = False
             else:
                 self.alt[key] = ''
