@@ -15,6 +15,14 @@ def _Song__getMetadataFromTags(filename):
         data["title"] = tag.title.rstrip('\0')
     if tag.year is not None:
         data["year"] = tag.year.rstrip('\0')
+    data["samplerate"] = tag.samplerate
+    data["duration"] = tag.duration
+    if (tag.bitrate > 1000):
+        # some m4a files are coming in with bitrates > 300,000 and not matching
+        # ffmpeg output, for now we'll just mask this as it looks wrong
+        data["bitrate"] = -1
+    else:
+        data["bitrate"] = tag.bitrate
     return data
 
 def _Song__getMetadataFromFilename(filename):
@@ -60,6 +68,9 @@ class Song:
         self.album = data.get("album", NA)
         self.title = data.get("title", NA)
         self.year = data.get("year", NA)
+        self.samplerate = int(data["samplerate"] / 1000)
+        self.duration = int(data["duration"])
+        self.bitrate = int(data["bitrate"])
 
     def __repr__(self):
         return f"{self.title} : {self.artist} : {self.album}"

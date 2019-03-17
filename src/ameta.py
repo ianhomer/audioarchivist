@@ -12,7 +12,7 @@ from termcolor import colored
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44
-audioExtensions = ["mp3", "wav", "ogg"]
+audioExtensions = ["m4a", "mp3", "ogg", "wav"]
 
 files = []
 for (dirpath, dirnames, filenames) in os.walk("."):
@@ -22,40 +22,6 @@ for (dirpath, dirnames, filenames) in os.walk("."):
             filter(lambda f : Path(f).suffix[1:] in audioExtensions, filenames))
         )
     )
-
-def mp3Handler(file):
-    id3 = eyed3.load(file)
-    audio = MP3(file)
-    return {
-        "bitrate"    : int(audio.info.bitrate / 1000),
-        "samplerate" : int(audio.info.sample_rate / 1000),
-        "length"     : int(audio.info.length)
-    }
-
-def oggHandler(file):
-    audio = OggVorbis(file)
-    tag = TinyTag.get(file)
-    return {
-        "bitrate"    : int(audio.info.bitrate / 1000),
-        "samplerate" : int(audio.info.sample_rate / 1000),
-        "length"     : int(audio.info.length)
-    }
-
-def wavHandler(file):
-    tag = TinyTag.get(file)
-    with wave.open(file) as w:
-        return {
-            "bitrate"    : int(w.getnchannels() * w.getsampwidth() * 8 * w.getframerate() / 1000),
-            "samplerate" : int(w.getframerate() / 1000),
-            "length"     : int(w.getnframes() / float(w.getframerate()))
-        }
-
-def defaultHandler(file):
-    return {
-        "bitrate"    : -1,
-        "samplerate" : -1,
-        "length"     : -1
-    }
 
 def run():
     parser = argparse.ArgumentParser(description='Display Audio File meta data.')
@@ -77,22 +43,17 @@ def run():
         ext = path.suffix[1:]
         stem = path.stem
         filesize = int(os.path.getsize(file) / 1024)
-        meta = {
-            "mp3" : mp3Handler,
-            "ogg" : oggHandler,
-            "wav" : wavHandler
-        }.get(ext, defaultHandler)(file)
         notes=""
         song = Song(file, args.byname)
         # Report any sample rates below 44Mhz, i.e. below expected
-        if (meta['samplerate'] < EXPECTED_SAMPLE_RATE):
-            notes+=f" low sample rate = {meta['samplerate']}Mhz"
+        if (song.samplerate < EXPECTED_SAMPLE_RATE):
+            notes+=f" low sample rate = {song.samplerate}Mhz"
         if (song.year != NA):
             notes+=f" {song.year}"
         print(f"{stem:50s} : {ext:4s} : " +
-            f"{meta['bitrate']:5d} : "+
+            f"{song.bitrate:5d} : "+
             f"{filesize:5d} : " +
-            f"{meta['length']:5d} : {song.artist:20s} : " +
+            f"{song.duration:5d} : {song.artist:20s} : " +
             f"{song.title:30s} : {song.album:20s} {notes}")
         if not song.aligned:
             print(colored(f"{' . . . ':81s} : " +
