@@ -4,6 +4,7 @@ from pathlib import Path
 from mutagen.mp3 import MP3
 from mutagen.oggvorbis import OggVorbis
 from mutagen.wavpack import WavPack
+import wave
 
 NA = "n/a"
 
@@ -22,22 +23,35 @@ def mp3Handler(file):
     id3 = eyed3.load(file)
     audio = MP3(file)
     return {
-        "album"     : id3.tag.album or NA,
-        "artist"    : id3.tag.artist or NA,
-        "title"     : id3.tag.title or NA,
-        "bitrate"   : int(audio.info.bitrate / 1000),
-        "length"    : int(audio.info.length)
+        "album"      : id3.tag.album or NA,
+        "artist"     : id3.tag.artist or NA,
+        "title"      : id3.tag.title or NA,
+        "bitrate"    : int(audio.info.bitrate / 1000),
+        "samplerate" : int(audio.info.sample_rate / 1000),
+        "length"     : int(audio.info.length)
     }
 
 def oggHandler(file):
     audio = OggVorbis(file)
     return {
-        "album"     : NA,
-        "artist"    : NA,
-        "title"     : NA,
-        "bitrate"   : int(audio.info.bitrate / 1000),
-        "length"    : int(audio.info.length)
+        "album"      : NA,
+        "artist"     : NA,
+        "title"      : NA,
+        "bitrate"    : int(audio.info.bitrate / 1000),
+        "samplerate" : int(audio.info.sample_rate / 1000),
+        "length"     : int(audio.info.length)
     }
+
+def wavHandler(file):
+    with wave.open(file) as w:
+        return {
+            "album"      : NA,
+            "artist"     : NA,
+            "title"      : NA,
+            "bitrate"    : w.getsampwidth(),
+            "samplerate" : w.getsampwidth(),
+            "length"     : int(w.getnframes() / float(w.getframerate()))
+        }
 
 def defaultHandler(file):
     return {
@@ -49,16 +63,14 @@ def defaultHandler(file):
     }
 
 def run():
-    header = f" : {'ext':4s} : {'kb/s':>5s} : {'kb':>5s} : {'s':>4s} : {'artist':20s} : {'title':30s} : album"
-    print(f"{'name':50s}" + header)
-    print(170*"-")
+    header = f" : {'ext':4s} : {'kb/s':>5s} : {'Mhz':>5s} : {'kb':>5s} : {'s':>4s} : {'artist':20s} : {'title':30s} : album"
     files.sort()
     lastParent = ""
     for file in files:
         path = Path(file)
         if (path.parent != lastParent):
             print("")
-            print(f"- - - {path.parent.name:>43s}/" + header)
+            print(f"file  {path.parent.name:>43s}/" + header)
             print(170*"-")
             lastParent = path.parent
         ext = path.suffix[1:]
@@ -66,9 +78,11 @@ def run():
         filesize = int(os.path.getsize(file) / 1024)
         meta = {
             "mp3" : mp3Handler,
-            "ogg" : oggHandler
+            "ogg" : oggHandler,
+            "wav" : wavHandler
         }.get(ext, defaultHandler)(file)
-        print(f"{stem:50s} : {ext:4s} : {meta['bitrate']:5d} : " +
+        print(f"{stem:50s} : {ext:4s} : " +
+            f"{meta['bitrate']:5d} : {meta['samplerate']:5d} : " +
             f"{filesize:5d} :" +
             f"{meta['length']:5d} : {meta['artist']:20s} : " +
             f"{meta['title']:30s} : {meta['album']}")
