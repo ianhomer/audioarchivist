@@ -8,6 +8,7 @@ from tinytag import TinyTag
 import wave
 from song import Song
 import argparse
+from termcolor import colored
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44
@@ -58,7 +59,9 @@ def defaultHandler(file):
 
 def run():
     parser = argparse.ArgumentParser(description='Display Audio File meta data.')
-    parser.add_argument('-n', '--namebased', help='Take metadata from file naming as precedence', default=False)
+    parser.add_argument('-n', '--byname',
+        help='Take metadata from file naming as precedence',
+        default=False)
     args = parser.parse_args()
 
     header = f" : {'ext':4s} : {'kb/s':>5s} : {'kb':>5s} : {'s':>5s} : {'artist':20s} : {'title':30s} : {'album':20s}"
@@ -80,7 +83,7 @@ def run():
             "wav" : wavHandler
         }.get(ext, defaultHandler)(file)
         notes=""
-        song = Song(file, args.namebased)
+        song = Song(file, args.byname)
         # Report any sample rates below 44Mhz, i.e. below expected
         if (meta['samplerate'] < EXPECTED_SAMPLE_RATE):
             notes+=f" low sample rate = {meta['samplerate']}Mhz"
@@ -91,3 +94,7 @@ def run():
             f"{filesize:5d} : " +
             f"{meta['length']:5d} : {song.artist:20s} : " +
             f"{song.title:30s} : {song.album:20s} {notes}")
+        if not song.aligned:
+            print(colored(f"{' . . . ':81s} : " +
+                f"{song.alt['artist']:20s} : " +
+                f"{song.alt['title']:30s} : {song.alt['album']:20s}", 'blue'))
