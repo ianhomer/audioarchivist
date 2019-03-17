@@ -4,6 +4,7 @@ from pathlib import Path
 from mutagen.mp3 import MP3
 from mutagen.oggvorbis import OggVorbis
 from mutagen.wavpack import WavPack
+from tinytag import TinyTag
 import wave
 
 NA = "n/a"
@@ -33,21 +34,23 @@ def mp3Handler(file):
 
 def oggHandler(file):
     audio = OggVorbis(file)
+    tag = TinyTag.get(file)
     return {
-        "album"      : NA,
-        "artist"     : NA,
-        "title"      : NA,
+        "album"      : tag.album or NA,
+        "artist"     : tag.artist or NA,
+        "title"      : tag.title or NA,
         "bitrate"    : int(audio.info.bitrate / 1000),
         "samplerate" : int(audio.info.sample_rate / 1000),
         "length"     : int(audio.info.length)
     }
 
 def wavHandler(file):
+    tag = TinyTag.get(file)
     with wave.open(file) as w:
         return {
-            "album"      : NA,
-            "artist"     : NA,
-            "title"      : NA,
+            "album"      : tag.album or NA,
+            "artist"     : tag.artist or NA,
+            "title"      : tag.title or NA,
             "bitrate"    : int(w.getnchannels() * w.getsampwidth() * 8 * w.getframerate() / 1000),
             "samplerate" : int(w.getframerate() / 1000),
             "length"     : int(w.getnframes() / float(w.getframerate()))
