@@ -45,13 +45,17 @@ class Song:
         self.aligned = True
         self.alt = {}
         for key in self.name.keys():
-            valueByName = self.name.get(key, NA)
-            valueByTag = self.tags.get(key, NA)
-            if valueByName != valueByTag:
-                self.alt[key] = valueByTag if byName else valueByName
+            valueByName = self.name[key]
+            if key not in self.tags:
                 self.aligned = False
+                self.alt[key] = "(no tag)"
             else:
-                self.alt[key] = ''
+                valueByTag = self.tags[key]
+                if valueByName != valueByTag:
+                    self.alt[key] = valueByTag if byName else valueByName
+                    self.aligned = False
+                else:
+                    self.alt[key] = ''
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
         self.title = data.get("title", NA)
