@@ -25,8 +25,11 @@ for (dirpath, dirnames, filenames) in os.walk("."):
 
 def run():
     parser = argparse.ArgumentParser(description='Display Audio File meta data.')
-    parser.add_argument('-n', '--byname',
+    parser.add_argument('-n', '--byname', action='store_true',
         help='Take metadata from file naming as precedence',
+        default=False)
+    parser.add_argument('-s', '--save', action='store_true',
+        help='Save tags to audio file',
         default=False)
     args = parser.parse_args()
 
@@ -40,7 +43,6 @@ def run():
             print(f"file  {path.parent.name:>43s}/" + header)
             print(170*"-")
             lastParent = path.parent
-        ext = path.suffix[1:]
         stem = path.stem
         filesize = int(os.path.getsize(file) / 1024)
         notes=""
@@ -50,7 +52,7 @@ def run():
             notes+=f" low sample rate = {song.samplerate}Mhz"
         if (song.year != NA):
             notes+=f" {song.year}"
-        print(f"{stem:50s} : {ext:4s} : " +
+        print(f"{stem:50s} : {song.ext:4s} : " +
             f"{song.bitrate:5d} : "+
             f"{filesize:5d} : " +
             f"{song.duration:5d} : {song.artist:20s} : " +
@@ -59,3 +61,5 @@ def run():
             print(colored(f"{' . . . ':81s} : " +
                 f"{song.alt['artist']:20s} : " +
                 f"{song.alt['title']:30s} : {song.alt['album']:20s}", 'blue'))
+            if args.save:
+                song.save()

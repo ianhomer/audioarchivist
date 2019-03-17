@@ -14,7 +14,9 @@ def run():
         print(f"File {audioIn} does not exist")
         return
     song = Song(audioIn)
-    destination = Destination('mp3', 256)
+    # Enforce 256 bitrate unless input is worse
+    bitrate = 256 if song.bitrate > 256 else song.bitrate
+    destination = Destination('mp3', bitrate)
     print(f"Converting audio file : {audioIn} : {song} -> {destination}")
     outFile=f"{song.title} - {song.artist}.{destination.ext}"
     ffmpegArgs = {
