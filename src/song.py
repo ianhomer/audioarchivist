@@ -23,7 +23,8 @@ class Song:
     @property
     def ffmpegArgs(self):
         return {
-            'metadata':f"title={self.title}",
-            'metadata:':f"artist={self.artist}",
-            'metadata:g':f"album={self.album}",
+            'metadata:g:0':f"title={self.title}",
+            'metadata:g:1':f"artist={self.artist}",
+            'metadata:g:2':f"album={self.album}",
+            'metadata:g:3':f"year=2019",
         }

@@ -27,6 +27,7 @@ def mp3Handler(file):
         "album"      : id3.tag.album or NA,
         "artist"     : id3.tag.artist or NA,
         "title"      : id3.tag.title or NA,
+        "year"       : NA,
         "bitrate"    : int(audio.info.bitrate / 1000),
         "samplerate" : int(audio.info.sample_rate / 1000),
         "length"     : int(audio.info.length)
@@ -39,6 +40,7 @@ def oggHandler(file):
         "album"      : tag.album or NA,
         "artist"     : tag.artist or NA,
         "title"      : tag.title or NA,
+        "year"       : tag.year or NA,
         "bitrate"    : int(audio.info.bitrate / 1000),
         "samplerate" : int(audio.info.sample_rate / 1000),
         "length"     : int(audio.info.length)
@@ -51,6 +53,7 @@ def wavHandler(file):
             "album"      : tag.album or NA,
             "artist"     : tag.artist or NA,
             "title"      : tag.title or NA,
+            "year"       : tag.year or NA,
             "bitrate"    : int(w.getnchannels() * w.getsampwidth() * 8 * w.getframerate() / 1000),
             "samplerate" : int(w.getframerate() / 1000),
             "length"     : int(w.getnframes() / float(w.getframerate()))
@@ -58,11 +61,13 @@ def wavHandler(file):
 
 def defaultHandler(file):
     return {
-        "album"     : NA,
-        "artist"    : NA,
-        "title"     : NA,
-        "bitrate"   : -1,
-        "length"    : -1
+        "album"      : NA,
+        "artist"     : NA,
+        "title"      : NA,
+        "year"       : NA,
+        "bitrate"    : -1,
+        "samplerate" : -1,
+        "length"     : -1
     }
 
 def run():
@@ -88,6 +93,8 @@ def run():
         # Report any sample rates below 44Mhz, i.e. below expected
         if (meta['samplerate'] < EXPECTED_SAMPLE_RATE):
             notes+=f" low sample rate = {meta['samplerate']}Mhz"
+        if (meta['year'] != NA):
+            notes+=f" {meta['year']}"
         print(f"{stem:50s} : {ext:4s} : " +
             f"{meta['bitrate']:5d} : "+
             f"{filesize:5d} :" +
