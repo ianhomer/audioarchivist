@@ -6,7 +6,7 @@ from destination import Destination
 from channels import Channels
 from song import Song
 
-replace = True
+replace = False
 quiet = True
 ogg = True
 mp3 = True
@@ -54,14 +54,17 @@ def run():
                 **channels.ffmpegArgs,
                 **song.ffmpegArgs
             }
-            print(f"Converting {destination} : {channels} : {ffmpegArgs}")
             outFile=f"{song.title}/{song.title} - {song.artist} - {channels} {destination.variationName}.{destination.ext}"
-            (
-                ffmpeg
-                    .input(audioIn)
-                    .output(outFile, **ffmpegArgs)
-                    .run(**{
-                        'quiet':quiet,
-                        'overwrite_output':replace
-                    })
-            )
+            if replace or not os.path.exists(outFile):
+                print(f"Converting {destination} : {channels} : {ffmpegArgs}")
+                (
+                    ffmpeg
+                        .input(audioIn)
+                        .output(outFile, **ffmpegArgs)
+                        .run(**{
+                            'quiet':quiet,
+                            'overwrite_output':replace
+                        })
+                )
+            else:
+                print(f"Already converted {destination}")
