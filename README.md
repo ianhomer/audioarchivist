@@ -14,7 +14,7 @@ report on audio meta data
 
 and convert to release format
 
-    aconvert
+    aconvert my.wav
 
 # Creating reference files for testings
 
@@ -29,3 +29,13 @@ artist and album metadata, e.g
 
     song:
       artist: Me
+
+# Fix meta tags
+
+Fill in empty tags based on file naming
+
+    ameta -s
+
+Correct meta tags to those controlled by file naming (and meta.yaml files)
+
+    ameta -sn
