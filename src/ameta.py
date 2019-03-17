@@ -7,6 +7,7 @@ from mutagen.wavpack import WavPack
 from tinytag import TinyTag
 import wave
 from song import Song
+import argparse
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44
@@ -56,6 +57,10 @@ def defaultHandler(file):
     }
 
 def run():
+    parser = argparse.ArgumentParser(description='Display Audio File meta data.')
+    parser.add_argument('-n', '--namebased', help='Take metadata from file naming as precedence', default=False)
+    args = parser.parse_args()
+
     header = f" : {'ext':4s} : {'kb/s':>5s} : {'kb':>5s} : {'s':>5s} : {'artist':20s} : {'title':30s} : {'album':20s}"
     files.sort()
     lastParent = ""
@@ -75,7 +80,7 @@ def run():
             "wav" : wavHandler
         }.get(ext, defaultHandler)(file)
         notes=""
-        song = Song(file, False)
+        song = Song(file, args.namebased)
         # Report any sample rates below 44Mhz, i.e. below expected
         if (meta['samplerate'] < EXPECTED_SAMPLE_RATE):
             notes+=f" low sample rate = {meta['samplerate']}Mhz"
