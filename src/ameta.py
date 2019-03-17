@@ -7,7 +7,7 @@ from mutagen.wavpack import WavPack
 import wave
 
 NA = "n/a"
-
+EXPECTED_SAMPLE_RATE = 44
 audioExtensions = ["mp3", "wav", "ogg"]
 
 files = []
@@ -48,8 +48,8 @@ def wavHandler(file):
             "album"      : NA,
             "artist"     : NA,
             "title"      : NA,
-            "bitrate"    : w.getsampwidth(),
-            "samplerate" : w.getsampwidth(),
+            "bitrate"    : int(w.getnchannels() * w.getsampwidth() * 8 * w.getframerate() / 1000),
+            "samplerate" : int(w.getframerate() / 1000),
             "length"     : int(w.getnframes() / float(w.getframerate()))
         }
 
@@ -63,7 +63,7 @@ def defaultHandler(file):
     }
 
 def run():
-    header = f" : {'ext':4s} : {'kb/s':>5s} : {'Mhz':>5s} : {'kb':>5s} : {'s':>4s} : {'artist':20s} : {'title':30s} : album"
+    header = f" : {'ext':4s} : {'kb/s':>5s} : {'kb':>5s} : {'s':>4s} : {'artist':20s} : {'title':30s} : {'album':20s}"
     files.sort()
     lastParent = ""
     for file in files:
@@ -81,8 +81,12 @@ def run():
             "ogg" : oggHandler,
             "wav" : wavHandler
         }.get(ext, defaultHandler)(file)
+        notes=""
+        # Report any sample rates below 44Mhz, i.e. below expected
+        if (meta['samplerate'] < EXPECTED_SAMPLE_RATE):
+            notes+=f" low sample rate = {meta['samplerate']}Mhz"
         print(f"{stem:50s} : {ext:4s} : " +
-            f"{meta['bitrate']:5d} : {meta['samplerate']:5d} : " +
+            f"{meta['bitrate']:5d} : "+
             f"{filesize:5d} :" +
             f"{meta['length']:5d} : {meta['artist']:20s} : " +
-            f"{meta['title']:30s} : {meta['album']}")
+            f"{meta['title']:30s} : {meta['album']:20s} {notes}")
