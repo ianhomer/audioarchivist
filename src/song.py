@@ -3,6 +3,7 @@ from meta import Meta
 from tinytag import TinyTag
 import eyed3
 import mutagen
+import taglib
 
 NA = "n/a"
 
@@ -21,7 +22,7 @@ def _Song__getMetadataFromTags(filename):
     data["duration"] = tag.duration
     if (tag.bitrate > 1000):
         # some m4a files are coming in with bitrates > 300,000 and not matching
-        # ffmpeg output, so we'll use mutagen instead 
+        # ffmpeg output, so we'll use mutagen instead
         data["bitrate"] = int(mutagen.File(filename).info.bitrate / 1000)
     else:
         data["bitrate"] = tag.bitrate
@@ -92,12 +93,19 @@ class Song:
         if self.aligned:
             print(f"No tags to save for {self.filename}")
         else:
-            if self.ext == "wav" or self.ext == "m4a":
-                print(f"Cannot save tags for {self.ext} file {self.filename}")
+            if self.ext == "m4a" or self.ext == "wav":
+                # eyed3 doesn't support wav or m4a, so we'll use the taglib wrapper
+                print(f"Saving tags for WAV : {self.filename}")
+                audiofile = taglib.File(self.filename)
+                audiofile.tags["ALBUM"] = self.album
+                audiofile.tags["ARTIST"] = self.artist
+                audiofile.tags["TITLE"] = self.title
+                print(audiofile.tags)
+                audiofile.save()
             else:
                 print(f"Saving tags for {self.filename}")
                 audiofile = eyed3.load(self.filename)
-                audiofile.tag.artist = self.artist
                 audiofile.tag.album = self.album
+                audiofile.tag.artist = self.artist
                 audiofile.tag.title = self.title
                 audiofile.tag.save()

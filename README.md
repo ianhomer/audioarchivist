@@ -2,6 +2,11 @@
 
 Collection of Utilities to Ease Management of Audio Assets
 
+# Pre-requisites
+
+    brew install taglib
+    pip3 install pytaglib
+
 # TL;DR;
 
 install
