@@ -4,6 +4,7 @@ import sys
 
 from destination import Destination
 from song import Song
+from logger import warn
 
 replace = False
 quiet = False
@@ -20,7 +21,7 @@ def run():
     bitrate = 256 if song.bitrate > 256 else song.bitrate
     if (bitrate < MIN_BITRATE):
         # Bitrate below MIN_BITRATE is limited value
-        print(f"Not converting to {bitrate} since below minumum allowed {MIN_BITRATE}")
+        warn(f"Not converting to {bitrate} since below minumum allowed {MIN_BITRATE}")
         return
     destination = Destination('mp3', bitrate)
     print(f"Converting audio file : {audioIn} : {song} -> {destination}")

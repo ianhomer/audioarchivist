@@ -27,8 +27,8 @@ def _Song__getMetadataFromTags(filename):
         # ffmpeg output, so we'll use mutagen instead
         audiofile = mutagen.File(filename)
         if audiofile is None:
-            warn(f"Cannot get audio file from {filename}")
-            data["bitrate"] = -9 # os.path.getsize(filename) / (tag.duration * 1024)
+            warn(f"Cannot get audio file from {filename}, estimating bitrate")
+            data["bitrate"] = os.path.getsize(filename) * 8 / (tag.duration * 1024)
         else:
             data["bitrate"] = int(audiofile.info.bitrate / 1000)
     else:
