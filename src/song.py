@@ -4,6 +4,7 @@ from tinytag import TinyTag
 import eyed3
 import mutagen
 import taglib
+from termcolor import colored
 
 NA = "n/a"
 
@@ -20,12 +21,20 @@ def _Song__getMetadataFromTags(filename):
         data["year"] = tag.year.rstrip('\0')
     data["samplerate"] = tag.samplerate
     data["duration"] = tag.duration
-    if (tag.bitrate > 1000):
-        # some m4a files are coming in with bitrates > 300,000 and not matching
-        # ffmpeg output, so we'll use mutagen instead
-        data["bitrate"] = int(mutagen.File(filename).info.bitrate / 1000)
+    if tag.bitrate is None:
+        data["bitrate"] = -1
     else:
-        data["bitrate"] = tag.bitrate
+        if (tag.bitrate > 1000):
+            # some m4a files are coming in with bitrates > 300,000 and not matching
+            # ffmpeg output, so we'll use mutagen instead
+            audiofile = mutagen.File(filename)
+            if audiofile is None:
+                data["bitrate"] = -9
+            else:
+                data["bitrate"] = int(audiofile.info.bitrate / 1000)
+        else:
+            data["bitrate"] = tag.bitrate
+
     return data
 
 def _Song__getMetadataFromFilename(filename):
@@ -33,6 +42,9 @@ def _Song__getMetadataFromFilename(filename):
     path = Path(filename)
     parts = path.stem.split('-')
     artist = parts[1].strip() if len(parts) > 1 else "unknown"
+    variation = None
+    if len(parts) > 2:
+        variation = "-".join(parts[2:]).strip()
     album = path.parent.resolve().name
     if "song" in metadata:
         songMetadata = metadata["song"]
@@ -45,6 +57,8 @@ def _Song__getMetadataFromFilename(filename):
         "album"      : album,
         "artist"     : artist,
         "title"      : title,
+        "stem"       : path.stem,
+        "variation"  : variation
     }
 
 class Song:
@@ -55,27 +69,42 @@ class Song:
         self.tags = _Song__getMetadataFromTags(filename)
         self.name = _Song__getMetadataFromFilename(filename)
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
-        self.aligned = True
-        self.alt = {}
-        for key in self.name.keys():
-            valueByName = self.name[key]
-            if key not in self.tags:
-                self.aligned = False
-                self.alt[key] = "(no tag)"
-            else:
-                valueByTag = self.tags[key]
-                if valueByName != valueByTag:
-                    self.alt[key] = valueByTag if byName else valueByName
-                    self.aligned = False
-                else:
-                    self.alt[key] = ''
+
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
         self.title = data.get("title", NA)
         self.year = data.get("year", NA)
+        self.variation = data.get("variation")
+        self.stem = data.get("stem")
+
         self.samplerate = int(data["samplerate"] / 1000)
         self.duration = int(data["duration"])
         self.bitrate = int(data["bitrate"])
+
+        self.aligned = True
+        self.stemAligned = True
+        self.alt = {}
+        for key in (self.name.keys() - ["variation"]):
+            valueByName = self.name[key]
+            if key == "stem":
+                # Special case, we compare stem to standardFilestem
+                if valueByName != self.standardFilestem:
+                    self.alt[key] = self.standardFilestem
+                    self.aligned = False
+                    self.stemAligned = False
+                else:
+                    self.alt[key] = ''
+            else:
+                if key not in self.tags:
+                    self.aligned = False
+                    self.alt[key] = "(no tag)"
+                else:
+                    valueByTag = self.tags[key]
+                    if valueByName != valueByTag:
+                        self.alt[key] = valueByTag if byName else valueByName
+                        self.aligned = False
+                    else:
+                        self.alt[key] = ''
 
     def __repr__(self):
         return f"{self.title} : {self.artist} : {self.album}"
@@ -89,22 +118,37 @@ class Song:
             'metadata:g:3':f"year={self.year}"
         }
 
+    @property
+    def standardFilestem(self):
+        standardFilename = self.title
+        standardFilename += " - " + self.artist
+        if self.variation is not None:
+            standardFilename += " - " + self.variation
+        return standardFilename
+
+    @property
+    def standardFilename(self):
+        return ( Path(self.filename).parent / (self.standardFilestem + "." + self.ext) )
+
     def save(self):
         if self.aligned:
             print(f"No tags to save for {self.filename}")
         else:
-            if self.ext == "m4a" or self.ext == "wav":
+            if self.ext == "m4a" or self.ext == "wav" or self.ext == "ogg":
                 # eyed3 doesn't support wav or m4a, so we'll use the taglib wrapper
-                print(f"Saving tags for WAV : {self.filename}")
+                print(colored(f"... Saving tags for WAV : {self.filename}","green"))
                 audiofile = taglib.File(self.filename)
                 audiofile.tags["ALBUM"] = self.album
                 audiofile.tags["ARTIST"] = self.artist
                 audiofile.tags["TITLE"] = self.title
                 audiofile.save()
             else:
-                print(f"Saving tags for {self.filename}")
+                print(colored(f"... Saving tags for {self.filename}","green"))
                 audiofile = eyed3.load(self.filename)
-                audiofile.tag.album = self.album
-                audiofile.tag.artist = self.artist
-                audiofile.tag.title = self.title
-                audiofile.tag.save()
+                if audiofile is None:
+                    print(colored(f"... Can't load audio file {self.filename} with eyed3","red"))
+                else:
+                    audiofile.tag.album = self.album
+                    audiofile.tag.artist = self.artist
+                    audiofile.tag.title = self.title
+                    audiofile.tag.save()
