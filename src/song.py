@@ -4,7 +4,7 @@ from tinytag import TinyTag
 import eyed3
 import mutagen
 import taglib
-from logger import warn
+from logger import warn, info
 import os
 
 NA = "n/a"
@@ -76,7 +76,7 @@ class Song:
         self.variation = data.get("variation")
         self.stem = data.get("stem")
 
-        self.samplerate = int(data["samplerate"] / 1000)
+        self.samplerate = int(data["samplerate"])
         self.duration = int(data["duration"])
         self.bitrate = int(data["bitrate"])
 

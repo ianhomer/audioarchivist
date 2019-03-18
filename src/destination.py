@@ -12,10 +12,17 @@ class Destination:
     @property
     def ffmpegArgs(self):
         if self.ext == "ogg":
-            return {"qscale:a":self.quality}
+            return {
+                "qscale:a":self.quality,
+                "ar":f"{self.samplerate}"
+            }
         else:
-            return {"b:a":f"{self.quality}k"}
+            return {
+                "b:a":f"{self.quality}k",
+                "ar":f"{self.samplerate}"
+            }
 
     def __init__(self, ext, quality):
         self.ext = ext
         self.quality = quality
+        self.samplerate = 44100
