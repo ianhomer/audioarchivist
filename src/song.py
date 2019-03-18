@@ -100,7 +100,6 @@ class Song:
                 audiofile.tags["ALBUM"] = self.album
                 audiofile.tags["ARTIST"] = self.artist
                 audiofile.tags["TITLE"] = self.title
-                print(audiofile.tags)
                 audiofile.save()
             else:
                 print(f"Saving tags for {self.filename}")
