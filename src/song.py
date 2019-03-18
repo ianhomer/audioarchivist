@@ -4,7 +4,8 @@ from tinytag import TinyTag
 import eyed3
 import mutagen
 import taglib
-from termcolor import colored
+from logger import warn
+import os
 
 NA = "n/a"
 
@@ -21,19 +22,17 @@ def _Song__getMetadataFromTags(filename):
         data["year"] = tag.year.rstrip('\0')
     data["samplerate"] = tag.samplerate
     data["duration"] = tag.duration
-    if tag.bitrate is None:
-        data["bitrate"] = -1
-    else:
-        if (tag.bitrate > 1000):
-            # some m4a files are coming in with bitrates > 300,000 and not matching
-            # ffmpeg output, so we'll use mutagen instead
-            audiofile = mutagen.File(filename)
-            if audiofile is None:
-                data["bitrate"] = -9
-            else:
-                data["bitrate"] = int(audiofile.info.bitrate / 1000)
+    if tag.bitrate is None or tag.bitrate > 1000:
+        # some m4a files are coming in with bitrates > 300,000 and not matching
+        # ffmpeg output, so we'll use mutagen instead
+        audiofile = mutagen.File(filename)
+        if audiofile is None:
+            warn(f"Cannot get audio file from {filename}")
+            data["bitrate"] = -9 # os.path.getsize(filename) / (tag.duration * 1024)
         else:
-            data["bitrate"] = tag.bitrate
+            data["bitrate"] = int(audiofile.info.bitrate / 1000)
+    else:
+        data["bitrate"] = tag.bitrate
 
     return data
 
@@ -132,21 +131,21 @@ class Song:
 
     def save(self):
         if self.aligned:
-            print(f"No tags to save for {self.filename}")
+            warn(f"No tags to save for {self.filename}")
         else:
             if self.ext == "m4a" or self.ext == "wav" or self.ext == "ogg":
                 # eyed3 doesn't support wav or m4a, so we'll use the taglib wrapper
-                print(colored(f"... Saving tags for WAV : {self.filename}","green"))
+                info(f"... Saving tags for WAV : {self.filename}")
                 audiofile = taglib.File(self.filename)
                 audiofile.tags["ALBUM"] = self.album
                 audiofile.tags["ARTIST"] = self.artist
                 audiofile.tags["TITLE"] = self.title
                 audiofile.save()
             else:
-                print(colored(f"... Saving tags for {self.filename}","green"))
+                info(f"Saving tags for {self.filename}")
                 audiofile = eyed3.load(self.filename)
                 if audiofile is None:
-                    print(colored(f"... Can't load audio file {self.filename} with eyed3","red"))
+                    warn(f"Can't load audio file {self.filename} with eyed3")
                 else:
                     audiofile.tag.album = self.album
                     audiofile.tag.artist = self.artist
