@@ -1,14 +1,16 @@
+import argparse
 import eyed3
 import os
+import wave
+
 from pathlib import Path
 from mutagen.mp3 import MP3
 from mutagen.oggvorbis import OggVorbis
 from mutagen.wavpack import WavPack
 from tinytag import TinyTag
-import wave
-from song import Song
-import argparse
 from termcolor import colored
+
+from song import Song
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44100

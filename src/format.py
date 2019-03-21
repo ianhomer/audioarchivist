@@ -1,6 +1,9 @@
-class Destination:
+class Format:
     def __repr__(self):
-        return f"{self.quality} {self.ext}"
+        if self.ext == "ogg":
+            return f"{self.ext} {self.quality} {self.samplerate/1000}Mhz"
+        else:
+            return f"{self.ext} {self.quality}kb/s {self.samplerate/1000}Mhz"
 
     @property
     def variationName(self):

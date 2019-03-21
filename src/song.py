@@ -1,11 +1,14 @@
-from pathlib import Path
-from meta import Meta
-from tinytag import TinyTag
 import eyed3
 import mutagen
-import taglib
-from logger import warn, info
 import os
+import taglib
+
+from meta import Meta
+from pathlib import Path
+from tinytag import TinyTag
+
+from format import Format
+from logger import warn, info
 
 NA = "n/a"
 
@@ -124,6 +127,10 @@ class Song:
         if self.variation is not None:
             standardFilename += " - " + self.variation
         return standardFilename
+
+    @property
+    def format(self):
+        return Format(self.ext, self.bitrate)
 
     @property
     def standardFilename(self):

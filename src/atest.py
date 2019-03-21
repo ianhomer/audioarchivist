@@ -2,7 +2,7 @@ import sys
 import os
 import ffmpeg
 
-from destination import Destination
+from format import Format
 from channels import Channels
 from song import Song
 
@@ -15,23 +15,23 @@ m4a = True
 destinations = []
 if ogg:
     destinations.extend([
-        Destination('ogg', 1),
-        Destination('ogg', 5),
-        Destination('ogg', 10)
+        Format('ogg', 1),
+        Format('ogg', 5),
+        Format('ogg', 10)
     ])
 if mp3:
     destinations.extend([
-        Destination('mp3', 32),
-        Destination('mp3', 64),
-        Destination('mp3', 128),
-        Destination('mp3', 256)
+        Format('mp3', 32),
+        Format('mp3', 64),
+        Format('mp3', 128),
+        Format('mp3', 256)
     ])
 if m4a:
     destinations.extend([
-        Destination('m4a', 32),
-        Destination('m4a', 64),
-        Destination('m4a', 128),
-        Destination('m4a', 256)
+        Format('m4a', 32),
+        Format('m4a', 64),
+        Format('m4a', 128),
+        Format('m4a', 256)
     ])
 
 channelsList = [Channels(1), Channels(2)]
