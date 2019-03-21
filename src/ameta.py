@@ -21,7 +21,7 @@ for (dirpath, dirnames, filenames) in os.walk("."):
     files.extend(list(
         map(
             lambda name : os.path.join(dirpath, name),
-            filter(lambda f : Path(f).suffix[1:] in audioExtensions, filenames))
+            filter(lambda f : Path(f).suffix[1:].lower() in audioExtensions, filenames))
         )
     )
 

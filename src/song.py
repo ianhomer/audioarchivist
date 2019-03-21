@@ -16,7 +16,7 @@ NA = "n/a"
 def _Song__getMetadataFromFile(filename):
     tag = TinyTag.get(filename)
     data = {}
-    ext = Path(filename).suffix[1:]
+    ext = Path(filename).suffix[1:].lower()
     if tag.artist is not None:
         data["artist"] = tag.artist.rstrip('\0')
     if tag.album is not None:
@@ -72,7 +72,7 @@ class Song:
     def __init__(self, filename, byName = False):
         self.filename = filename
         path = Path(filename)
-        self.ext = path.suffix[1:]
+        self.ext = path.suffix[1:].lower()
         self.tags = _Song__getMetadataFromFile(filename)
         self.name = _Song__getMetadataFromFilename(filename)
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
