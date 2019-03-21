@@ -20,7 +20,7 @@ def run():
         default=False)
     args = parser.parse_args()
     audioIn = args.file
-    print("Converting audio file : {audioIn}")
+    print(f"Converting audio file : {audioIn}")
     if not os.path.exists(audioIn):
         print(f"File {audioIn} does not exist")
         return
@@ -34,7 +34,7 @@ def run():
     if args.compress:
         destination = Format('mp3', bitrate)
     else:
-        destination = Format('wav', bitrate)
+        destination = Format('flac', bitdepth = song.bitdepth)
 
     print(f"Converting audio file : {audioIn} : {song} {song.format}-> {destination}")
     if song.format == destination:

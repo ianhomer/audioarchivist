@@ -11,13 +11,14 @@ quiet = True
 ogg = True
 mp3 = True
 m4a = True
+flac = True
 
 destinations = []
 if ogg:
     destinations.extend([
-        Format('ogg', 1),
-        Format('ogg', 5),
-        Format('ogg', 10)
+        Format('ogg', quality = 1),
+        Format('ogg', quality = 5),
+        Format('ogg', quality = 10)
     ])
 if mp3:
     destinations.extend([
@@ -32,6 +33,11 @@ if m4a:
         Format('m4a', 64),
         Format('m4a', 128),
         Format('m4a', 256)
+    ])
+if flac:
+    destinations.extend([
+        Format('flac', bitdepth = 16),
+        Format('flac', bitdepth = 32)
     ])
 
 channelsList = [Channels(1), Channels(2)]

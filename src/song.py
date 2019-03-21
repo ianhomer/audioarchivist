@@ -2,6 +2,7 @@ import eyed3
 import mutagen
 import os
 import taglib
+import wave
 
 from meta import Meta
 from pathlib import Path
@@ -12,9 +13,10 @@ from logger import warn, info
 
 NA = "n/a"
 
-def _Song__getMetadataFromTags(filename):
+def _Song__getMetadataFromFile(filename):
     tag = TinyTag.get(filename)
     data = {}
+    ext = Path(filename).suffix[1:]
     if tag.artist is not None:
         data["artist"] = tag.artist.rstrip('\0')
     if tag.album is not None:
@@ -25,15 +27,18 @@ def _Song__getMetadataFromTags(filename):
         data["year"] = tag.year.rstrip('\0')
     data["samplerate"] = tag.samplerate
     data["duration"] = tag.duration
-    if tag.bitrate is None or tag.bitrate > 1000:
+    data["bitdepth"] = -1
+    if ext == "flac":
+        data["bitdepth"] = mutagen.File(filename).info.bits_per_sample
+        data["bitrate"] = tag.bitrate
+    elif ext == "wav":
+        data["bitdepth"] = wave.open(filename).getsampwidth() * 8
+        data["bitrate"] = tag.bitrate
+    elif tag.bitrate is None or tag.bitrate > 1000:
         # some m4a files are coming in with bitrates > 300,000 and not matching
         # ffmpeg output, so we'll use mutagen instead
         audiofile = mutagen.File(filename)
-        if audiofile is None:
-            warn(f"Cannot get audio file from {filename}, estimating bitrate")
-            data["bitrate"] = os.path.getsize(filename) * 8 / (tag.duration * 1024)
-        else:
-            data["bitrate"] = int(audiofile.info.bitrate / 1000)
+        data["bitrate"] = int(audiofile.info.bitrate / 1000)
     else:
         data["bitrate"] = tag.bitrate
 
@@ -68,7 +73,7 @@ class Song:
         self.filename = filename
         path = Path(filename)
         self.ext = path.suffix[1:]
-        self.tags = _Song__getMetadataFromTags(filename)
+        self.tags = _Song__getMetadataFromFile(filename)
         self.name = _Song__getMetadataFromFilename(filename)
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
 
@@ -82,6 +87,7 @@ class Song:
         self.samplerate = int(data["samplerate"])
         self.duration = int(data["duration"])
         self.bitrate = int(data["bitrate"])
+        self.bitdepth = int(data["bitdepth"])
 
         self.aligned = True
         self.stemAligned = True

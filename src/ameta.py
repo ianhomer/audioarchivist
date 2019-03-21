@@ -14,7 +14,7 @@ from song import Song
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44100
-audioExtensions = ["m4a", "mp3", "ogg", "wav"]
+audioExtensions = ["flac", "m4a", "mp3", "ogg", "wav"]
 
 files = []
 for (dirpath, dirnames, filenames) in os.walk("."):
@@ -52,8 +52,9 @@ def run():
         song = Song(file, args.byname)
         # Only display sample rate if not expected value
         unexpectedSamplerate = f"{int(song.samplerate/1000)}" if song.samplerate != EXPECTED_SAMPLE_RATE else ""
+        bitdepthOrRate = colored(f"  s{song.bitdepth:2d}",'blue') if song.bitdepth > 0 else f"{song.bitrate:5d}"
         print(f"{song.stem:50s} : {song.ext:4s} : " +
-            f"{song.bitrate:5d} : {unexpectedSamplerate:>3s} : " +
+            f"{bitdepthOrRate} : {unexpectedSamplerate:>3s} : " +
             f"{filesize:5d} : " +
             f"{song.duration:5d} : {song.artist:20s} : " +
             f"{song.title:30s} : {song.album:20s}")
