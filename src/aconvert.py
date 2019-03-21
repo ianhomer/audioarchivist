@@ -46,6 +46,8 @@ def run():
         **destination.ffmpegArgs,
         **song.ffmpegArgs
     }
+    print(f"ffmpeg args : {ffmpegArgs}")
+    # TODO : Convert bitrate for wav, this may need get / set bitrate for wav - https://superuser.com/questions/1245618/how-does-ffmpeg-control-bitdepth-and-bitrate
     (
         ffmpeg
             .input(audioIn)
