@@ -15,8 +15,8 @@ def run():
     parser = argparse.ArgumentParser(description='Convert audio files.')
     parser.add_argument('file',nargs='+',
         help='audio file')
-    parser.add_argument('-c', '--compress', action='store_true',
-        help='Compress audio, by converting to mp3',
+    parser.add_argument('-f', '--flac', action='store_true',
+        help='Lossless compress audio, by converting to flac',
         default=False)
     args = parser.parse_args()
     for audioIn in args.file:
@@ -31,17 +31,17 @@ def run():
             # Bitrate below MIN_BITRATE is limited value
             warn(f"Not converting to {bitrate} since below minumum allowed {MIN_BITRATE}")
             return
-        if args.compress:
-            destination = Format('mp3', bitrate)
-        else:
+        if args.flac:
             destination = Format('flac', bitdepth = song.bitdepth)
+        else:
+            destination = Format('mp3', bitrate)
 
         print(f"Converting audio file : {audioIn} : {song} {song.format}-> {destination}")
         if song.format == destination:
             printf("No conversion necessary")
             return
 
-        outFile=f"{song.title} - {song.artist} - converted.{destination.ext}"
+        outFile=f"{song.title} - {song.artist} - {song.album}.{destination.ext}"
         ffmpegArgs = {
             **destination.ffmpegArgs,
             **song.ffmpegArgs
