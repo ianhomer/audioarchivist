@@ -4,7 +4,7 @@ from pathlib import Path
 METAFILENAME="meta.yaml"
 # If the root meta file is found then parental scanning will stop
 ROOT_METAFILENAME="meta-root.yaml"
-MAXDEPTH=5
+MAXDEPTH=6
 
 def _Meta__findMetaFiles(path, depth):
     metadataFile = path.parent.resolve().joinpath(METAFILENAME)
@@ -20,13 +20,18 @@ def _Meta__findMetaFiles(path, depth):
             "root" : rootMetadataFile
         }
     else:
-        parentMetaFiles = _Meta__findMetaFiles(path.parent.resolve(), depth+1)
         if depth < MAXDEPTH :
+            parentMetaFiles = _Meta__findMetaFiles(path.parent.resolve(), depth+1)
             metadataFiles.extend(parentMetaFiles['files'])
-        return {
-            "files" : metadataFiles,
-            "root" : parentMetaFiles["root"]
-        }
+            return {
+                "files" : metadataFiles,
+                "root" : parentMetaFiles["root"]
+            }
+        else:
+            return {
+                "files" : [],
+                "root" : None
+             }
 
 
 def _Meta__loadMetadata(path, depth):
