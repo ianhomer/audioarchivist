@@ -58,18 +58,18 @@ def run():
         default=False)
     args = parser.parse_args()
 
-    header = f" : {'collection':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
+    header = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
     files.sort()
-    lastParent = ""
+    lastPath = ""
 
     for file in files:
         song = Song(file, args.byname)
-        pathFromRoot = song.pathFromRoot
-        if (str(pathFromRoot) != lastParent):
+        path = song.pathInCollection
+        if (str(path) != lastPath):
             print("")
-            print(f"file  {pathFromRoot:>43s}/" + header)
+            print(f"{path:>49s}/" + header)
             print(190*"-")
-            lastParent = str(pathFromRoot)
+            lastPath = path
         displaySong(song, args)
         for alt in song.alternatives:
             displaySong(alt, args)
