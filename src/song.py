@@ -3,6 +3,7 @@ import mutagen
 import os
 import taglib
 import wave
+import glob
 
 from meta import Meta
 from pathlib import Path
@@ -12,6 +13,9 @@ from format import Format
 from logger import warn, info
 
 NA = "n/a"
+# Cache alternative paths from root, since we only support execution in one root directory
+ALTERNATIVE_PATHS_FROM_ROOT = None
+ALTERNATIVE_GLOB = "*.mp3"
 
 def _Song__getMetadataFromFile(filename):
     tag = TinyTag.get(filename)
@@ -84,7 +88,9 @@ class Song:
         else:
             self.pathFromRoot = str(filename.parent)
 
-        self.relativeFilename = path.name
+        firstSlash = self.pathFromRoot.find('/')
+        self.collectionName = self.pathFromRoot[:firstSlash]
+        self.relativeFilename = self.pathFromRoot[firstSlash + 1:]
 
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
@@ -143,6 +149,32 @@ class Song:
         if self.variation is not None:
             standardFilename += " - " + self.variation
         return standardFilename
+
+    @property
+    def alternativePathsFromRoot(self):
+        global ALTERNATIVE_PATHS_FROM_ROOT
+        if ALTERNATIVE_PATHS_FROM_ROOT is None:
+            ALTERNATIVE_PATHS_FROM_ROOT = list(
+                map(
+                    lambda child : child.name + "/" + self.relativeFilename,
+                    filter(lambda f:
+                        not f.name.startswith(".") and f.is_dir(),
+                        self.rootDirectory.iterdir()
+                    )
+                )
+            )
+        return ALTERNATIVE_PATHS_FROM_ROOT
+
+    @property
+    def alternatives(self):
+        alternatives = []
+        for pathFromRoot in self.alternativePathsFromRoot:
+            alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot, self.stem)
+            globPattern = str(alternativeDirectory) + ALTERNATIVE_GLOB
+            alternativeFiles = glob.glob(globPattern)
+            for alternativeFile in alternativeFiles:
+                alternatives.append(Song(alternativeFile))
+        return alternatives
 
     @property
     def format(self):
