@@ -49,9 +49,10 @@ def run():
         return
     song = Song(audioIn)
     print(f"Converting audio files for testing : {audioIn} : {song}")
-    if not os.path.exists(song.title):
-        print(f"Making directory {song.title}")
-        os.makedirs(song.title)
+    directory = "Test"
+    if not os.path.exists(directory):
+        print(f"Making directory {directory}")
+        os.makedirs(directory)
 
     for destination in destinations:
         for channels in channelsList:
@@ -60,7 +61,7 @@ def run():
                 **channels.ffmpegArgs,
                 **song.ffmpegArgs
             }
-            outFile=f"{song.title}/{song.title} - {song.artist} - {channels} {destination.variationName}.{destination.ext}"
+            outFile=f"{directory}/{song.title} ({channels} {destination.variationName}) - {directory} - {song.artist}.{destination.ext}"
             if replace or not os.path.exists(outFile):
                 print(f"Converting {destination} : {channels} : {ffmpegArgs}")
                 (
