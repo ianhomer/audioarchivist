@@ -5,6 +5,7 @@ import taglib
 import wave
 import glob
 import sys
+import re
 
 from meta import Meta
 from pathlib import Path
@@ -56,10 +57,14 @@ def _Song__getMetadataFromFilename(filename):
     metadata = Meta(filename).data
     path = Path(filename)
     parts = path.stem.split('-')
-    artist = parts[1].strip() if len(parts) > 1 else "unknown"
-    variation = None
-    if len(parts) > 2:
-        variation = "-".join(parts[2:]).strip()
+    artist = parts[2].strip() if len(parts) > 1 else "unknown"
+    title = parts[0].strip()
+    # If variation is specified in brackets
+    search = re.search('(.*)(?:\(([^\)]*)\))', title)
+    if (search is not None):
+        variation = search.group(2).strip()
+    else:
+        variation = None
     album = path.parent.resolve().name
     if "song" in metadata:
         songMetadata = metadata["song"]
@@ -67,9 +72,6 @@ def _Song__getMetadataFromFilename(filename):
             artist = songMetadata["artist"]
         if "album" in songMetadata:
             album = songMetadata["album"]
-    if variation is None:
-        variation = album
-    title = parts[0].strip()
     return {
         "album"      : album,
         "artist"     : artist,
@@ -150,15 +152,14 @@ class Song:
 
     @property
     def standardFileStem(self):
-        standardFilename = self.standardFileTitleArtistStem
-        if self.variation is not None:
-            standardFilename += " - " + self.variation
+        standardFilename = self.standardFileTitleStem
+        standardFilename += " - " + self.album
+        standardFilename += " - " + self.artist
         return standardFilename
 
     @property
-    def standardFileTitleArtistStem(self):
+    def standardFileTitleStem(self):
         standardFilename = self.title
-        standardFilename += " - " + self.artist
         return standardFilename
 
     @property
@@ -184,7 +185,7 @@ class Song:
         for pathFromRoot in self.alternativePathsFromRoot:
             if not pathFromRoot.startswith(self.collectionName + "/"):
                 for alternativeGlob in ALTERNATIVE_GLOBS:
-                    alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot,self.standardFileTitleArtistStem)
+                    alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot,self.standardFileTitleStem)
                     globPattern = str(alternativeDirectory) + alternativeGlob
                     alternativeFiles = glob.glob(globPattern)
                     for alternativeFile in alternativeFiles:
