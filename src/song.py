@@ -90,7 +90,7 @@ class Song:
 
         firstSlash = self.pathFromRoot.find('/')
         self.collectionName = self.pathFromRoot[:firstSlash]
-        self.relativeFilename = self.pathFromRoot[firstSlash + 1:]
+        self.pathInCollection = self.pathFromRoot[firstSlash + 1:]
 
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
@@ -156,7 +156,7 @@ class Song:
         if ALTERNATIVE_PATHS_FROM_ROOT is None:
             ALTERNATIVE_PATHS_FROM_ROOT = list(
                 map(
-                    lambda child : child.name + "/" + self.relativeFilename,
+                    lambda child : child.name + "/" + self.pathInCollection,
                     filter(lambda f:
                         not f.name.startswith(".") and f.is_dir(),
                         self.rootDirectory.iterdir()

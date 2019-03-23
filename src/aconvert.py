@@ -18,6 +18,9 @@ def run():
     parser.add_argument('-f', '--flac', action='store_true',
         help='Lossless compress audio, by converting to flac',
         default=False)
+    parser.add_argument('-c', '--collection',
+        help='Set collection name for output',
+        default=None)
     args = parser.parse_args()
     for audioIn in args.file:
         print(f"Converting audio file : {audioIn}")
@@ -41,7 +44,8 @@ def run():
             printf("No conversion necessary")
             return
 
-        outFile=f"{song.title} - {song.artist} - {song.album}.{destination.ext}"
+        collectionName = args.collection if args.collection is not None else song.collectionName
+        outFile=f"{song.rootDirectory}/{collectionName}/{song.pathInCollection}/{song.title} - {song.artist} - {song.album}.{destination.ext}"
         ffmpegArgs = {
             **destination.ffmpegArgs,
             **song.ffmpegArgs
