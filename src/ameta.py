@@ -32,11 +32,11 @@ def displaySong(song, args):
     bitdepthOrRate = colored(f"  s{song.bitdepth:2d}",'blue') if song.bitdepth > 0 else f"{song.bitrate:5d}"
     print(f"{song.stem:50s} : {song.collectionName!s:10s} : {song.ext:4s} : " +
         f"{bitdepthOrRate} : {unexpectedSamplerate:>3s} : " +
-        f"{filesize:5d} : " +
+        f"{filesize:6d} : " +
         f"{song.duration:5d} : {song.artist:20s} : " +
         f"{song.title:30s} : {song.album:20s}")
     if not song.aligned:
-        print(colored(f"{song.alt['stem']:100s} : " +
+        print(colored(f"{song.alt['stem']:101s} : " +
             f"{song.alt['artist']:20s} : " +
             f"{song.alt['title']:30s} : {song.alt['album']:20s}", 'blue'))
         if args.save:
@@ -58,7 +58,7 @@ def run():
         default=False)
     args = parser.parse_args()
 
-    header = f" : {'collection':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>5s} : {'artist':20s} : {'title':30s} : {'album':20s}"
+    header = f" : {'collection':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
     files.sort()
     lastParent = ""
 
@@ -68,7 +68,7 @@ def run():
         if (str(pathFromRoot) != lastParent):
             print("")
             print(f"file  {pathFromRoot:>43s}/" + header)
-            print(170*"-")
+            print(190*"-")
             lastParent = str(pathFromRoot)
         displaySong(song, args)
         for alt in song.alternatives:
