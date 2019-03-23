@@ -42,14 +42,14 @@ def run():
     files.sort()
     lastParent = ""
     for file in files:
-        path = Path(file)
-        if (path.parent != lastParent):
-            print("")
-            print(f"file  {path.parent.name:>43s}/" + header)
-            print(170*"-")
-            lastParent = path.parent
-        filesize = int(os.path.getsize(file) / 1024)
         song = Song(file, args.byname)
+        pathFromRoot = song.pathFromRoot
+        if (str(pathFromRoot) != lastParent):
+            print("")
+            print(f"file  {pathFromRoot:>43s}/" + header)
+            print(170*"-")
+            lastParent = str(pathFromRoot)
+        filesize = int(os.path.getsize(file) / 1024)
         # Only display sample rate if not expected value
         unexpectedSamplerate = f"{int(song.samplerate/1000)}" if song.samplerate != EXPECTED_SAMPLE_RATE else ""
         bitdepthOrRate = colored(f"  s{song.bitdepth:2d}",'blue') if song.bitdepth > 0 else f"{song.bitrate:5d}"

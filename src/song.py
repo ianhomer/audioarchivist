@@ -64,6 +64,7 @@ def _Song__getMetadataFromFilename(filename):
         "album"      : album,
         "artist"     : artist,
         "title"      : title,
+        "rootDirectory"       : metadata["rootDirectory"],
         "stem"       : path.stem,
         "variation"  : variation
     }
@@ -76,6 +77,14 @@ class Song:
         self.tags = _Song__getMetadataFromFile(filename)
         self.name = _Song__getMetadataFromFilename(filename)
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
+        self.rootDirectory = data["rootDirectory"]
+        absoluteFilename = Path(filename).resolve()
+        if str(absoluteFilename).startswith(str(self.rootDirectory)) :
+            self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.rootDirectory)) + 1:]
+        else:
+            self.pathFromRoot = str(filename.parent)
+
+        self.relativeFilename = path.name
 
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
@@ -102,7 +111,8 @@ class Song:
                     self.stemAligned = False
                 else:
                     self.alt[key] = ''
-            else:
+            elif key != "rootDirectory" :
+                # Root directory not relevant for alignment check
                 if key not in self.tags:
                     self.aligned = False
                     self.alt[key] = "(no tag)"

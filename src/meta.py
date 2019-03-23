@@ -17,7 +17,7 @@ def _Meta__findMetaFiles(path, depth):
         metadataFiles.extend([rootMetadataFile.as_posix()])
         return {
             "files" : metadataFiles,
-            "root" : rootMetadataFile
+            "rootDirectory" : Path(rootMetadataFile).parent.resolve()
         }
     else:
         if depth < MAXDEPTH :
@@ -25,12 +25,12 @@ def _Meta__findMetaFiles(path, depth):
             metadataFiles.extend(parentMetaFiles['files'])
             return {
                 "files" : metadataFiles,
-                "root" : parentMetaFiles["root"]
+                "rootDirectory" : parentMetaFiles["rootDirectory"]
             }
         else:
             return {
                 "files" : [],
-                "root" : None
+                "rootDirectory" : None
              }
 
 
@@ -38,7 +38,7 @@ def _Meta__loadMetadata(path, depth):
     metadataFiles = _Meta__findMetaFiles(path, 0)
     return {
         "data" : hiyapyco.load(metadataFiles["files"], method=hiyapyco.METHOD_MERGE),
-        "root" : metadataFiles["root"]
+        "rootDirectory" : metadataFiles["rootDirectory"]
     }
 
 class Meta:
@@ -47,4 +47,4 @@ class Meta:
         path = Path(filename)
         metadata = __loadMetadata(path, 0)
         self.data = metadata["data"]
-        self.data["root"] = metadata["root"]
+        self.data["rootDirectory"] = metadata["rootDirectory"]
