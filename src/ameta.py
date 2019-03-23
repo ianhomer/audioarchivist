@@ -25,7 +25,7 @@ for (dirpath, dirnames, filenames) in os.walk("."):
         )
     )
 
-def displaySong(song):
+def displaySong(song, args):
     filesize = int(os.path.getsize(song.filename) / 1024)
     # Only display sample rate if not expected value
     unexpectedSamplerate = f"{int(song.samplerate/1000)}" if song.samplerate != EXPECTED_SAMPLE_RATE else ""
@@ -36,7 +36,7 @@ def displaySong(song):
         f"{song.duration:5d} : {song.artist:20s} : " +
         f"{song.title:30s} : {song.album:20s}")
     if not song.aligned:
-        print(colored(f"{song.alt['stem']:87s} : " +
+        print(colored(f"{song.alt['stem']:100s} : " +
             f"{song.alt['artist']:20s} : " +
             f"{song.alt['title']:30s} : {song.alt['album']:20s}", 'blue'))
         if args.save:
@@ -70,6 +70,6 @@ def run():
             print(f"file  {pathFromRoot:>43s}/" + header)
             print(170*"-")
             lastParent = str(pathFromRoot)
-        displaySong(song)
+        displaySong(song, args)
         for alt in song.alternatives:
-            displaySong(alt)
+            displaySong(alt, args)
