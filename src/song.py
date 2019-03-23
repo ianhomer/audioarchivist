@@ -67,6 +67,8 @@ def _Song__getMetadataFromFilename(filename):
             artist = songMetadata["artist"]
         if "album" in songMetadata:
             album = songMetadata["album"]
+    if variation is None:
+        variation = album
     title = parts[0].strip()
     return {
         "album"      : album,
