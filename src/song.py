@@ -89,12 +89,12 @@ class Song:
         absoluteFilename = Path(filename).resolve()
         if str(absoluteFilename).startswith(str(self.rootDirectory)) :
             self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.rootDirectory)) + 1:]
+            firstSlash = self.pathFromRoot.find('/')
+            self.collectionName = self.pathFromRoot[:firstSlash]
+            self.pathInCollection = self.pathFromRoot[firstSlash + 1:]
         else:
-            self.pathFromRoot = str(filename.parent)
-
-        firstSlash = self.pathFromRoot.find('/')
-        self.collectionName = self.pathFromRoot[:firstSlash]
-        self.pathInCollection = self.pathFromRoot[firstSlash + 1:]
+            self.pathFromRoot = str(path.parent)
+            self.collectionName = None
 
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
@@ -176,6 +176,8 @@ class Song:
 
     @property
     def alternatives(self):
+        if self.collectionName is None:
+            return []
         alternatives = []
         for pathFromRoot in self.alternativePathsFromRoot:
             if not pathFromRoot.startswith(self.collectionName + "/"):

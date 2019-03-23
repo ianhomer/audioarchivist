@@ -35,6 +35,9 @@ artist and album metadata, e.g
     song:
       artist: Me
 
+Create a meta-root.yaml in the root directory of your audio files to provide
+support for collections.      
+
 # Fix meta tags
 
 Fill in empty tags based on file naming

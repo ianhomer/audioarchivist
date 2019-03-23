@@ -30,7 +30,7 @@ def displaySong(song, args):
     # Only display sample rate if not expected value
     unexpectedSamplerate = f"{int(song.samplerate/1000)}" if song.samplerate != EXPECTED_SAMPLE_RATE else ""
     bitdepthOrRate = colored(f"  s{song.bitdepth:2d}",'blue') if song.bitdepth > 0 else f"{song.bitrate:5d}"
-    print(f"{song.stem:50s} : {song.collectionName:10s} : {song.ext:4s} : " +
+    print(f"{song.stem:50s} : {song.collectionName!s:10s} : {song.ext:4s} : " +
         f"{bitdepthOrRate} : {unexpectedSamplerate:>3s} : " +
         f"{filesize:5d} : " +
         f"{song.duration:5d} : {song.artist:20s} : " +
