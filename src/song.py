@@ -15,7 +15,7 @@ from logger import warn, info
 NA = "n/a"
 # Cache alternative paths from root, since we only support execution in one root directory
 ALTERNATIVE_PATHS_FROM_ROOT = None
-ALTERNATIVE_GLOB = "*.mp3"
+ALTERNATIVE_GLOBS = ["*.mp3","*.wav"]
 
 def _Song__getMetadataFromFile(filename):
     tag = TinyTag.get(filename)
@@ -111,8 +111,8 @@ class Song:
             valueByName = self.name[key]
             if key == "stem":
                 # Special case, we compare stem to standardFilestem
-                if valueByName != self.standardFilestem:
-                    self.alt[key] = self.standardFilestem
+                if valueByName != self.standardFileStem:
+                    self.alt[key] = self.standardFileStem
                     self.aligned = False
                     self.stemAligned = False
                 else:
@@ -143,11 +143,16 @@ class Song:
         }
 
     @property
-    def standardFilestem(self):
-        standardFilename = self.title
-        standardFilename += " - " + self.artist
+    def standardFileStem(self):
+        standardFilename = self.standardFileTitleArtistStem
         if self.variation is not None:
             standardFilename += " - " + self.variation
+        return standardFilename
+
+    @property
+    def standardFileTitleArtistStem(self):
+        standardFilename = self.title
+        standardFilename += " - " + self.artist
         return standardFilename
 
     @property
@@ -169,11 +174,13 @@ class Song:
     def alternatives(self):
         alternatives = []
         for pathFromRoot in self.alternativePathsFromRoot:
-            alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot, self.stem)
-            globPattern = str(alternativeDirectory) + ALTERNATIVE_GLOB
-            alternativeFiles = glob.glob(globPattern)
-            for alternativeFile in alternativeFiles:
-                alternatives.append(Song(alternativeFile))
+            if not pathFromRoot.startswith(self.collectionName + "/"):
+                for alternativeGlob in ALTERNATIVE_GLOBS:
+                    alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot,self.standardFileTitleArtistStem)
+                    globPattern = str(alternativeDirectory) + alternativeGlob
+                    alternativeFiles = glob.glob(globPattern)
+                    for alternativeFile in alternativeFiles:
+                        alternatives.append(Song(alternativeFile))
         return alternatives
 
     @property
@@ -182,7 +189,7 @@ class Song:
 
     @property
     def standardFilename(self):
-        return ( Path(self.filename).parent / (self.standardFilestem + "." + self.ext) )
+        return ( Path(self.filename).parent / (self.standardFileStem + "." + self.ext) )
 
     def save(self):
         if self.aligned:
