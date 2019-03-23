@@ -191,6 +191,9 @@ class Song:
                         alternatives.append(Song(alternativeFile))
         return alternatives
 
+    def getFilenameInCollection(self,collection):
+        return self.rootDirectory.joinpath(collection,self.pathInCollection,self.filename)
+
     @property
     def format(self):
         return Format(self.ext, self.bitrate)

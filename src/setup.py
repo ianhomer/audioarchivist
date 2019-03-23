@@ -4,8 +4,9 @@ setup(
     version='0.0.1',
     entry_points={
         'console_scripts': [
-            'ameta=ameta:run',
             'aconvert=aconvert:run',
+            'ameta=ameta:run',
+            'amove=amove:run',
             'atest=atest:run'
         ]
     }
