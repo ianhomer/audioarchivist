@@ -1,9 +1,9 @@
 import hiyapyco
 from pathlib import Path
 
-METAFILENAME="meta.yaml"
+METAFILENAME=".ameta.yaml"
 # If the root meta file is found then parental scanning will stop
-ROOT_METAFILENAME="meta-root.yaml"
+ROOT_METAFILENAME=".ameta-root.yaml"
 MAXDEPTH=6
 
 def _Meta__findMetaFiles(path, depth):
