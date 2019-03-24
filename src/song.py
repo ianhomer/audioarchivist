@@ -32,8 +32,10 @@ def _Song__getMetadataFromFile(filename):
             data["title"] = tag.title.rstrip('\0')
         if tag.year is not None:
             data["year"] = tag.year.rstrip('\0')
-        data["samplerate"] = tag.samplerate
-        data["duration"] = tag.duration
+        if tag.samplerate is not None:
+            data["samplerate"] = tag.samplerate
+        if tag.duration is not None:
+            data["duration"] = tag.duration
         data["bitdepth"] = -1
         if ext == "flac":
             data["bitdepth"] = mutagen.File(filename).info.bits_per_sample
@@ -57,7 +59,7 @@ def _Song__getMetadataFromFilename(filename):
     metadata = Meta(filename).data
     path = Path(filename)
     parts = path.stem.split('-')
-    artist = parts[2].strip() if len(parts) > 1 else "unknown"
+    artist = parts[2].strip() if len(parts) > 2 else "unknown"
     title = parts[0].strip()
     # If variation is specified in brackets
     search = re.search('(.*)(?:\(([^\)]*)\))', title)
