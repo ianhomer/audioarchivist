@@ -47,4 +47,6 @@ class Meta:
         path = Path(filename)
         metadata = __loadMetadata(path, 0)
         self.data = metadata["data"]
+        if self.data is None:
+            self.data = {}
         self.data["rootDirectory"] = metadata["rootDirectory"]

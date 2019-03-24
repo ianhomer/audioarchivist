@@ -64,7 +64,10 @@ def run():
 
     for file in files:
         song = Song(file, args.byname)
-        path = song.pathInCollection
+        if song.collectionName is None:
+            path = song.pathFromRoot
+        else:
+            path = song.pathInCollection
         if (str(path) != lastPath):
             print("")
             print(f"{path:>49s}/" + header)
