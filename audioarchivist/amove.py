@@ -3,7 +3,7 @@ import argparse
 
 from pathlib import Path
 
-from song import Song
+from .song import Song
 
 def run():
     parser = argparse.ArgumentParser(description='Move audio files.')

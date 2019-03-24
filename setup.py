@@ -1,13 +1,15 @@
 from setuptools import setup
 setup(
-    name='audio-helpers',
+    name='audioarchivist',
     version='0.0.1',
+    description='Audio Archivist',
+    packages=['audioarchivist'],
     entry_points={
         'console_scripts': [
-            'aconvert=aconvert:run',
-            'ameta=ameta:run',
-            'amove=amove:run',
-            'atest=atest:run'
+            'aconvert=audioarchivist.aconvert:run',
+            'ameta=audioarchivist.ameta:run',
+            'amove=audioarchivist.amove:run',
+            'atest=audioarchivist.atest:run'
         ]
     }
 )

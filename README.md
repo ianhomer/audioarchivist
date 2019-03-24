@@ -1,6 +1,6 @@
 # Background
 
-Opinionated Audio Archivist.
+Audio Archivist.
 
 Helps manage collection of audio assets, with reporting on audio resolution,
 opinionated file naming, audio tagging and audio conversion.

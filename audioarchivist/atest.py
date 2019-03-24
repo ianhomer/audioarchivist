@@ -2,9 +2,9 @@ import sys
 import os
 import ffmpeg
 
-from format import Format
-from channels import Channels
-from song import Song
+from .format import Format
+from .channels import Channels
+from .song import Song
 
 replace = False
 quiet = True

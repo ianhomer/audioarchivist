@@ -3,9 +3,9 @@ import ffmpeg
 import os
 import sys
 
-from format import Format
-from logger import warn
-from song import Song
+from .format import Format
+from .logger import warn
+from .song import Song
 
 replace = False
 quiet = False

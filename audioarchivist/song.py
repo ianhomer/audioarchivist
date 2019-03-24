@@ -8,12 +8,12 @@ import sys
 import re
 import traceback
 
-from meta import Meta
 from pathlib import Path
 from tinytag import TinyTag
 
-from format import Format
-from logger import warn, info
+from .meta import Meta
+from .format import Format
+from .logger import warn, info
 
 NA = "n/a"
 # Cache alternative paths from root, since we only support execution in one root directory

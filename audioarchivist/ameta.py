@@ -10,7 +10,7 @@ from mutagen.wavpack import WavPack
 from tinytag import TinyTag
 from termcolor import colored
 
-from song import Song
+from audioarchivist import Song
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44100
