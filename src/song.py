@@ -6,6 +6,7 @@ import wave
 import glob
 import sys
 import re
+import traceback
 
 from meta import Meta
 from pathlib import Path
@@ -54,7 +55,7 @@ def _Song__getMetadataFromFile(filename):
             data["bitrate"] = tag.bitrate
     except:
         print(f"Cannot parse {filename}")
-        print("Unexpected error:", sys.exc_info()[0])
+        traceback.print_exc()
     return data
 
 def _Song__getMetadataFromFilename(filename):
