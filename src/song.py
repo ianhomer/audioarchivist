@@ -19,7 +19,7 @@ NA = "n/a"
 ALTERNATIVE_PATHS_FROM_ROOT = None
 ALTERNATIVE_GLOBS = ["*.mp3","*.wav"]
 
-NAMING_TITLE_AND_ARTISTS = "title-and-artist"
+NAMING_TITLE_AND_ARTIST = "title-and-artist"
 
 def _Song__getMetadataFromFile(filename):
     data = {}
@@ -59,10 +59,18 @@ def _Song__getMetadataFromFile(filename):
 
 def _Song__getMetadataFromFilename(filename):
     metadata = Meta(filename).data
+    if "song" in metadata:
+        songMetadata = metadata["song"]
+
+    naming = songMetadata.get("naming", None)
     path = Path(filename)
     parts = path.stem.split('-')
-    artist = parts[2].strip() if len(parts) > 2 else "unknown"
     title = parts[0].strip()
+    if naming == NAMING_TITLE_AND_ARTIST:
+        artist = parts[1].strip() if len(parts) > 1 else "unknown"
+    else:
+        album = parts[1].strip() if len(parts) > 1 else None
+        artist = parts[2].strip() if len(parts) > 2 else "unknown"
     # If variation is specified in brackets
     search = re.search('(.*)(?:\(([^\)]*)\))', title)
     if (search is not None):
@@ -70,12 +78,13 @@ def _Song__getMetadataFromFilename(filename):
     else:
         variation = None
     album = path.parent.resolve().name
+
     if "song" in metadata:
-        songMetadata = metadata["song"]
         if "artist" in songMetadata:
             artist = songMetadata["artist"]
         if "album" in songMetadata:
             album = songMetadata["album"]
+
     return {
         "album"         : album,
         "artist"        : artist,
@@ -159,7 +168,7 @@ class Song:
     @property
     def standardFileStem(self):
         standardFilename = self.standardFileTitleStem
-        if (self.naming == NAMING_TITLE_AND_ARTISTS):
+        if self.naming == NAMING_TITLE_AND_ARTIST:
             standardFilename += " - " + self.artist
         else:
             standardFilename += " - " + self.album
