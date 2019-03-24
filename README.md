@@ -14,7 +14,7 @@ opinionated file naming, audio tagging and audio conversion.
 
 install
 
-    pip3 install -e src
+    pip3 install -e .
 
 report on audio meta data
 
