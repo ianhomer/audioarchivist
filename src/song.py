@@ -19,6 +19,8 @@ NA = "n/a"
 ALTERNATIVE_PATHS_FROM_ROOT = None
 ALTERNATIVE_GLOBS = ["*.mp3","*.wav"]
 
+NAMING_TITLE_AND_ARTISTS = "title-and-artist"
+
 def _Song__getMetadataFromFile(filename):
     data = {}
     try:
@@ -75,12 +77,13 @@ def _Song__getMetadataFromFilename(filename):
         if "album" in songMetadata:
             album = songMetadata["album"]
     return {
-        "album"      : album,
-        "artist"     : artist,
-        "title"      : title,
-        "rootDirectory"       : metadata["rootDirectory"],
-        "stem"       : path.stem,
-        "variation"  : variation
+        "album"         : album,
+        "artist"        : artist,
+        "naming"        : songMetadata.get("naming", None),
+        "rootDirectory" : metadata["rootDirectory"],
+        "stem"          : path.stem,
+        "title"         : title,
+        "variation"     : variation
     }
 
 class Song:
@@ -108,6 +111,7 @@ class Song:
         self.year = data.get("year", NA)
         self.variation = data.get("variation")
         self.stem = data.get("stem")
+        self.naming = data.get("naming")
 
         self.samplerate = int(data.get("samplerate", -1))
         self.duration = int(data.get("duration", -1))
@@ -127,7 +131,7 @@ class Song:
                     self.stemAligned = False
                 else:
                     self.alt[key] = ''
-            elif key != "rootDirectory" :
+            elif key != "rootDirectory" and key != "naming" :
                 # Root directory not relevant for alignment check
                 if key not in self.tags:
                     self.aligned = False
@@ -155,8 +159,11 @@ class Song:
     @property
     def standardFileStem(self):
         standardFilename = self.standardFileTitleStem
-        standardFilename += " - " + self.album
-        standardFilename += " - " + self.artist
+        if (self.naming == NAMING_TITLE_AND_ARTISTS):
+            standardFilename += " - " + self.artist
+        else:
+            standardFilename += " - " + self.album
+            standardFilename += " - " + self.artist
         return standardFilename
 
     @property
@@ -209,8 +216,8 @@ class Song:
         if self.aligned:
             warn(f"No tags to save for {self.filename}")
         else:
-            if self.ext == "m4a" or self.ext == "wav" or self.ext == "ogg":
-                # eyed3 doesn't support wav or m4a, so we'll use the taglib wrapper
+            if self.ext == "m4a" or self.ext == "wav" or self.ext == "ogg" or self.ext == "flac":
+                # eyed3 doesn't support some file types, so we'll use the taglib wrapper
                 info(f"... Saving tags for WAV : {self.filename}")
                 audiofile = taglib.File(self.filename)
                 audiofile.tags["ALBUM"] = self.album
