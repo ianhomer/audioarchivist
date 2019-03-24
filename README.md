@@ -1,6 +1,9 @@
 # Background
 
-Collection of Utilities to Ease Management of Audio Assets
+Opinionated Audio Archivist.
+
+Helps manage collection of audio assets, with reporting on audio resolution,
+opinionated file naming, audio tagging and audio conversion.
 
 # Pre-requisites
 
@@ -47,3 +50,7 @@ Fill in empty tags based on file naming
 Correct meta tags to those controlled by file naming (and meta.yaml files)
 
     ameta -sn
+
+Correct meta tags and rename to consistent naming pattern
+
+    ameta -snr
