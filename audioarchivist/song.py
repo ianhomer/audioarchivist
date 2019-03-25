@@ -1,12 +1,16 @@
 import eyed3
 import mutagen
 import os
-import taglib
 import wave
 import glob
 import sys
 import re
 import traceback
+
+# Travis build fails with installing taglib, so we can't unit test it.  Lazy load as work around.
+import importlib
+taglib_spec = importlib.util.find_spec("taglib")
+taglib = taglib_spec is not None
 
 from pathlib import Path
 from tinytag import TinyTag
