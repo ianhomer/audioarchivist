@@ -47,15 +47,9 @@ def displaySong(song, args):
 
 def run():
     parser = argparse.ArgumentParser(description='Display Audio File meta data.')
-    parser.add_argument('-n', '--byname', action='store_true',
-        help='Take metadata from file naming as precedence',
-        default=False)
-    parser.add_argument('-s', '--save', action='store_true',
-        help='Save tags to audio file',
-        default=False)
-    parser.add_argument('-r', '--rename', action='store_true',
-        help='Rename file to standard naming',
-        default=False)
+    parser.add_argument('-n', '--byname', action='store_true', help='Take metadata from file naming as precedence', default=False)
+    parser.add_argument('-s', '--save', action='store_true', help='Save tags to audio file', default=False)
+    parser.add_argument('-r', '--rename', action='store_true', help='Rename file to standard naming', default=False)
     args = parser.parse_args()
 
     header = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
