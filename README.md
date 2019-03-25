@@ -54,3 +54,7 @@ Correct meta tags to those controlled by file naming (and meta.yaml files)
 Correct meta tags and rename to consistent naming pattern
 
     ameta -snr
+
+# Running Tests
+
+    python setup.py test

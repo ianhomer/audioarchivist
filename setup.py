@@ -11,5 +11,7 @@ setup(
             'amove=audioarchivist.amove:run',
             'atest=audioarchivist.atest:run'
         ]
-    }
+    },
+    test_suite='nose.collector',
+    tests_require=['nose']    
 )
