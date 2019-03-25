@@ -16,13 +16,10 @@ class Storage:
         self.tmpDirectory = tmpDirectory
         self.storageDirectory = storageDirectory
 
-    def getFilename(self, relativeFilename):
+    def filename(self, relativeFilename):
         return os.path.join(storageDirectory, relativeFilename)
 
-    def getTmpFilename(self, relativeFilename):
-        return os.path.join(tmpDirectory, relativeFilename)
-
-    def createTmp(self, protoype, name):
+    def tmp(self, protoype, name):
         newFilename = os.path.join(tmpDirectory, name)
         directory = Path(newFilename).parent
         if not os.path.exists(directory):
