@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from audioarchivist.song import Song
-from audioarchivist.tests.storage import Storage
+from storage import Storage
 
 storage = Storage()
 
