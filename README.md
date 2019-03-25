@@ -57,4 +57,4 @@ Correct meta tags and rename to consistent naming pattern
 
 # Running Tests
 
-    python setup.py test
+    python3 setup.py test
