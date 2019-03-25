@@ -13,32 +13,17 @@ MIN_BITRATE = 128
 
 def run():
     parser = argparse.ArgumentParser(description='Convert audio files.')
-    parser.add_argument('file',nargs='+',
-        help='audio file')
-    parser.add_argument('-w', '--wav', action='store_true',
-        help='Lossless audio, by converting to wav',
-        default=False)
-    parser.add_argument('-f', '--flac', action='store_true',
-        help='Lossless compress audio, by converting to flac',
-        default=False)
-    parser.add_argument('-c', '--collection',
-        help='Set collection name for output',
-        default=None)
-    parser.add_argument('-v', '--variant', action='store_true',
-        help='Add variant to title',
-        default=False)
-    parser.add_argument('--bitdepth',
-        help='Set bit depth',
-        default=None)
-    parser.add_argument('--samplerate',
-        help='Set sample rate (khz)',
-        default=None)
-    parser.add_argument('--seconds',
-        help='Crop to number of seconds',
-        default=None)
-    parser.add_argument('--start',
-        help='Start at given number of seconds',
-        default=None)
+    parser.add_argument('file', nargs='+', help='audio file')
+    parser.add_argument('-w', '--wav', action='store_true', help='Lossless audio, by converting to wav', default=False)
+    parser.add_argument('-f', '--flac', action='store_true', help='Lossless compress audio, by converting to flac', default=False)
+    parser.add_argument('-c', '--collection', help='Set collection name for output', default=None)
+    parser.add_argument('-v', '--variant', action='store_true', help='Add variant to title', default=False)
+    parser.add_argument('--bitrate', help='Set bit rate', default=None)
+    parser.add_argument('--bitdepth', help='Set bit depth', default=None)
+    parser.add_argument('--samplerate', help='Set sample rate (khz)', default=None)
+    parser.add_argument('--seconds', help='Crop to number of seconds', default=None)
+    parser.add_argument('--start', help='Start at given number of seconds', default=None)
+    parser.add_argument('--nomin', action='store_true', help="Don't enforce any minimum standards", default=False)
     args = parser.parse_args()
     for audioIn in args.file:
         print(f"Converting audio file : {audioIn}")
@@ -48,10 +33,12 @@ def run():
         song = Song(audioIn)
         # Enforce 256 bitrate unless input is worse
         bitrate = 256 if song.bitrate > 256 else song.bitrate
+        if args.bitrate is not None:
+            bitrate = int(args.bitrate)
         bitdepth = song.bitdepth if args.bitdepth is None else int(args.bitdepth)
         samplerate = song.samplerate if args.samplerate is None else int(args.samplerate)
 
-        if (bitrate < MIN_BITRATE):
+        if not args.nomin and bitrate < MIN_BITRATE:
             # Bitrate below MIN_BITRATE is limited value
             warn(f"Not converting to {bitrate} since below minumum allowed {MIN_BITRATE}")
             return
