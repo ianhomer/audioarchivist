@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.5"
+
+# command to install dependencies
+install:
+  - "pip install coveralls"
+
+# command to run tests
+script:
+  coverage run --source=audioarchivist $(command -v nosetests)
+
+after_success:
+  coveralls
