@@ -6,6 +6,7 @@ import sys
 from .format import Format
 from .logger import warn
 from .song import Song
+from .channels import Channels
 
 replace = False
 quiet = False
@@ -20,6 +21,7 @@ def run():
     parser.add_argument('-v', '--variant', action='store_true', help='Add variant to title', default=False)
     parser.add_argument('--bitrate', help='Set bit rate', default=None)
     parser.add_argument('--bitdepth', help='Set bit depth', default=None)
+    parser.add_argument('--mono', help='Convert to mono', action='store_true', default=False)
     parser.add_argument('--samplerate', help='Set sample rate (khz)', default=None)
     parser.add_argument('--seconds', help='Crop to number of seconds', default=None)
     parser.add_argument('--start', help='Start at given number of seconds', default=None)
@@ -62,8 +64,11 @@ def run():
             outFile=f"{song.rootDirectory}/{args.collection}/{song.pathInCollection}/{title} - {song.artist} - {song.album}.{destination.ext}"
         else:
             outFile=f"./{title} - {song.artist} - {song.album}.{destination.ext}"
+
+        channels = Channels(1) if args.mono else Channels(2)
         ffmpegArgs = {
             **destination.ffmpegArgs,
+            **channels.ffmpegArgs,
             **song.ffmpegArgs
         }
         ffmpegArgs['metadata:g:0']:f"title={title}"
