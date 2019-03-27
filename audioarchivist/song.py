@@ -10,7 +10,9 @@ import traceback
 # Travis build fails with installing taglib, so we can't unit test it.  Lazy load as work around.
 import importlib
 taglib_spec = importlib.util.find_spec("taglib")
-taglib = taglib_spec is not None
+if taglib_spec is not None:
+    taglib = importlib.util.module_from_spec(taglib_spec)
+    taglib_spec.loader.exec_module(taglib)
 
 from pathlib import Path
 from tinytag import TinyTag
