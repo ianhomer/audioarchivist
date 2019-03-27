@@ -46,3 +46,30 @@ class TestSong(TestCase):
         song.save()
         song = Song(filename)
         self.assertEqual(song.title, "New Title")
+
+    def test_songs(self):
+        for meta in [
+            {
+                "filename"  : "prototypes/Test000 - prototypes - Purpley.mp3",
+                "album"     : "prototypes",
+                "samplerate"  : 44100
+            },
+            {
+                "filename"  : "prototypes/invalid/ID3 With Header With A Zero Byte - Purpley - prototypes.wav",
+                "title"     : "Test000",
+                "duration"  : 1,
+                # Support for this not yet in release of TinyTag, so won't pass in CI
+                "enabled"   : False
+            },
+
+        ]:
+            if "enabled" not in meta or meta["enabled"]:
+                song = Song(storage.filename(meta["filename"]))
+                if "title" in meta:
+                    self.assertEqual(song.title, meta["title"])
+                if "album" in meta:
+                    self.assertEqual(song.album, meta["album"])
+                if "duration" in meta:
+                    self.assertEqual(song.duration, meta["duration"])
+                if "samplerate" in meta:
+                    self.assertEqual(song.samplerate, meta["samplerate"])
