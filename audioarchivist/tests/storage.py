@@ -8,6 +8,7 @@ storageDirectory = os.path.join(testDirectory, "storage")
 tmpDirectory = os.path.join(testDirectory, "tmp")
 
 protoypes = {
+    "ameta-root": storageDirectory + "/prototypes/ameta-root.yaml",
     "mp3": storageDirectory + "/prototypes/Test000 - prototypes - Purpley.mp3"
 }
 
@@ -19,11 +20,21 @@ class Storage:
     def filename(self, relativeFilename):
         return os.path.join(storageDirectory, relativeFilename)
 
+    def tmpFilename(self, relativeFilename):
+        return os.path.join(tmpDirectory, relativeFilename)
+
     def tmp(self, protoype, name):
         newFilename = os.path.join(tmpDirectory, name)
         directory = Path(newFilename).parent
         if not os.path.exists(directory):
             print(f"Making tests tmp directory {directory}")
             os.makedirs(directory)
+        self.initialiseMeta(name)
         copyfile(protoypes[protoype], newFilename)
         return newFilename
+
+    def initialiseMeta(self, name):
+        if name.startswith('meta'):
+            rootMetaFile = os.path.join(tmpDirectory, 'meta/.ameta-root.yaml')
+            if not os.path.exists(rootMetaFile):
+                copyfile(protoypes["ameta-root"], rootMetaFile)

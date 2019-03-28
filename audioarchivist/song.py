@@ -107,9 +107,13 @@ def _Song__getMetadataFromFilename(filename):
 class Song:
     def __init__(self, filename, byName = False):
         self.filename = filename
+        self.exists = os.path.exists(filename)
+        if not self.exists:
+            warn(f"Song {filename} does not exist")
         path = Path(filename)
         self.ext = path.suffix[1:].lower()
-        self.tags = _Song__getMetadataFromFile(filename)
+        self.basename = path.name
+        self.tags = _Song__getMetadataFromFile(filename) if self.exists else {}
         self.name = _Song__getMetadataFromFilename(filename)
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
         self.rootDirectory = data["rootDirectory"]
@@ -220,7 +224,7 @@ class Song:
         return alternatives
 
     def getFilenameInCollection(self,collection):
-        return self.rootDirectory.joinpath(collection,self.pathInCollection,self.filename)
+        return self.rootDirectory.joinpath(collection, self.pathInCollection, self.basename)
 
     @property
     def format(self):
@@ -252,3 +256,12 @@ class Song:
                     audiofile.tag.artist = self.artist
                     audiofile.tag.title = self.title
                     audiofile.tag.save()
+
+    def move(self, collection):
+        source = self.filename
+        destination = self.getFilenameInCollection(collection)
+        print(f"Moving to {collection}\n... {source} \n -> {destination}")
+        directory = str(Path(destination).parent)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        os.rename(source, destination)
