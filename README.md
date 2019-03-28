@@ -58,3 +58,7 @@ Correct meta tags and rename to consistent naming pattern
 # Running Tests
 
     pytest
+
+with coverage
+
+    pytest --cov=. --cov-report term-missing
