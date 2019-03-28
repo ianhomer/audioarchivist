@@ -217,6 +217,7 @@ class Song:
             if not pathFromRoot.startswith(self.collectionName + "/"):
                 for alternativeGlob in ALTERNATIVE_GLOBS:
                     alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot,self.standardFileTitleStem)
+                    print(alternativeDirectory)
                     globPattern = str(alternativeDirectory) + alternativeGlob
                     alternativeFiles = glob.glob(globPattern)
                     for alternativeFile in alternativeFiles:
