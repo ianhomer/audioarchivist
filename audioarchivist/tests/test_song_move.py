@@ -11,7 +11,10 @@ class TestSongMove(TestCase):
         relativeFilename = "samples/Move - samples - Purpley.mp3"
         filename = storage.tmp("mp3", "meta-move/from/" + relativeFilename)
         song = Song(filename)
+        source = Path(filename)
+        self.assertTrue(source.exists())
         song.move("to")
+        self.assertFalse(source.exists())
         destination = Path(storage.tmpFilename("meta-move/to/" + relativeFilename))
         self.assertTrue(destination.exists())
         destination.unlink()
