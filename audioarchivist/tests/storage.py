@@ -24,6 +24,13 @@ class Storage:
     def tmpFilename(self, relativeFilename):
         return os.path.join(tmpDirectory, relativeFilename)
 
+    def tmpRemove(self, name):
+        path = Path(self.tmpFilename(name))
+        if path.is_dir():
+            path.rmdir()
+        else:
+            path.unlink()
+
     def tmp(self, protoype, name):
         newFilename = os.path.join(tmpDirectory, name)
         directory = Path(newFilename).parent
@@ -36,6 +43,7 @@ class Storage:
 
     def initialiseMeta(self, name):
         if name.startswith('meta'):
-            rootMetaFile = os.path.join(tmpDirectory, 'meta/.ameta-root.yaml')
+            rootDirectory = name.split('/')[0]
+            rootMetaFile = os.path.join(tmpDirectory, rootDirectory, ".ameta-root.yaml")
             if not os.path.exists(rootMetaFile):
                 copyfile(protoypes["ameta-root"], rootMetaFile)
