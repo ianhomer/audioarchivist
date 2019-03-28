@@ -49,4 +49,10 @@ class Meta:
         self.data = metadata["data"]
         if self.data is None:
             self.data = {}
+        if "song" in self.data:
+            self.song = ObjectView(self.data["song"])
         self.data["rootDirectory"] = metadata["rootDirectory"]
+
+class ObjectView(object):
+    def __init__(self, d):
+        self.__dict__ = d

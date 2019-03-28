@@ -12,3 +12,4 @@ class TestSongMeta(TestCase):
         meta = Meta(filename)
         print(meta.data)
         self.assertEqual("Purpley", meta.data["song"]["artist"])
+        self.assertEqual("Purpley", meta.song.artist)
