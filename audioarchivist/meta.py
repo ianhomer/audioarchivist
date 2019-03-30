@@ -67,4 +67,4 @@ class Meta:
 
 class ObjectView(object):
     def __init__(self, d):
-        self.__dict__ = d
+        self.__dict__ = d if d is not None else {}

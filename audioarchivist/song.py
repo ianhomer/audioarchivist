@@ -67,12 +67,7 @@ def _Song__getMetadataFromFile(filename):
 
 def _Song__getMetadataFromFilename(album, filename):
     metadata = album.meta.data
-    songMetadata = None
-    if "song" in metadata:
-        songMetadata = metadata["song"]
-    naming = None
-    if songMetadata is not None:
-        naming = songMetadata.get("naming", None)
+    naming = album.songMetadata.get("naming", None)
     path = Path(filename)
     parts = path.stem.split('-')
     title = parts[0].strip()
@@ -87,9 +82,8 @@ def _Song__getMetadataFromFilename(album, filename):
     else:
         variation = None
 
-    if "song" in metadata:
-        if "artist" in songMetadata:
-            artist = songMetadata["artist"]
+    if "artist" in album.songMetadata:
+        artist = album.songMetadata["artist"]
 
     return {
         "album"         : album.name,

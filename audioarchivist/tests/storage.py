@@ -10,6 +10,8 @@ tmpDirectory = os.path.join(testDirectory, "tmp")
 protoypes = {
     "ameta-root": storageDirectory + "/prototypes/ameta-root.yaml",
     "meta-artist": storageDirectory + "/prototypes/meta-artist.yaml",
+    "meta-empty": storageDirectory + "/prototypes/meta-empty.yaml",
+    "meta-naming-artist-and-title": storageDirectory + "/prototypes/meta-naming-title-and-artist.yaml",
     "mp3": storageDirectory + "/prototypes/Test000 - prototypes - Purpley.mp3"
 }
 
