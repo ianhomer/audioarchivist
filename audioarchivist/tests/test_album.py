@@ -1,13 +1,14 @@
 from pathlib import Path
 from unittest import TestCase
 
-
 import audioarchivist.logger
 from audioarchivist.album import Album
 from audioarchivist.album import AlbumPath
 from storage import Storage
 
 storage = Storage()
+def tmpFilename(filename):
+    return storage.tmpFilename(filename)
 
 class TestSongAlbum(TestCase):
     def test_album(self):
@@ -54,12 +55,14 @@ class TestSongAlbum(TestCase):
         root = storage.tmpFilename("no-meta")
         albumPath = AlbumPath(storage.tmpFilename("no-meta/album-master/my-album"), root)
         for tuple in [
-            ["no-meta/album-master/my-album-1/my-song.wav","album-master/my-album-1","my-album-1"],
-            ["no-meta/album-master/my-album-2/","album-master/my-album-2","my-album-2"],
-            ["no-meta/album-master/my-album-3/.","album-master/my-album-3","my-album-3"],
-            ["no-meta/album-master/my-album-4","album-master/my-album-4","my-album-4"],
-            ["no-meta/album-master","album-master",None]
+            [tmpFilename("no-meta/album-master/my-album-1/my-song.wav"),"album-master/my-album-1","my-album-1"],
+            [tmpFilename("no-meta/album-master/my-album-2/"),"album-master/my-album-2","my-album-2"],
+            [tmpFilename("no-meta/album-master/my-album-3/."),"album-master/my-album-3","my-album-3"],
+            [tmpFilename("no-meta/album-master/my-album-4"),"album-master/my-album-4","my-album-4"],
+            [tmpFilename("no-meta/album-master"),"album-master",None],
+            ["audioarchivist/tests/tmp/no-meta/album-master/my-album-5","album-master/my-album-5","my-album-5"],
+            ["audioarchivist/tests/tmp/no-meta/album-master","album-master",None]
+
         ]:
-            filename = storage.tmpFilename(tuple[0])
-            self.assertEqual(albumPath.relativeToRoot(filename), tuple[1])
-            self.assertEqual(albumPath.relativeToCollection(filename), tuple[2])
+            self.assertEqual(albumPath.relativeToRoot(tuple[0]), tuple[1])
+            self.assertEqual(albumPath.relativeToCollection(tuple[0]), tuple[2])
