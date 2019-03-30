@@ -12,3 +12,12 @@ class Album:
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
         self.name = self.meta.album or path.stem
         self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data else {}) or {}
+        self.root = self.meta.data["rootDirectory"]
+
+        absoluteFilename = path.resolve()
+        if str(absoluteFilename).startswith(str(self.root)) :
+            self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.root)) + 1:]
+            firstSlash = self.pathFromRoot.find('/')
+            self.collectionName = self.pathFromRoot[:firstSlash] if firstSlash > -1 else self.pathFromRoot
+        else:
+            self.collectionName = None

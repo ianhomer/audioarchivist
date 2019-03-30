@@ -89,7 +89,7 @@ def _Song__getMetadataFromFilename(album, filename):
         "album"         : album.name,
         "artist"        : artist,
         "naming"        : naming,
-        "rootDirectory" : metadata["rootDirectory"],
+        "rootDirectory" : album.root,
         "stem"          : path.stem,
         "title"         : title,
         "variation"     : variation
