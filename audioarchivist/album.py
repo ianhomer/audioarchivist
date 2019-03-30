@@ -4,17 +4,18 @@ from .meta import Meta
 
 class Album:
     def __init__(self, directoryName):
-        path = Path(directoryName)
-        if not path.is_dir():
+        if not Path(directoryName).is_dir():
             raise Exception(f"Cannot create album from {directoryName} since not a directory")
+
         self.directoryName = directoryName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
         self.name = self.meta.album or path.stem
         self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data else {}) or {}
         self.root = self.meta.data["rootDirectory"]
+        self.path = AlbumPath(directoryName, self.root)
 
-        absoluteFilename = path.resolve()
+        absoluteFilename = self.path.path.resolve()
         if str(absoluteFilename).startswith(str(self.root)) :
             self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.root)) + 1:]
             firstSlash = self.pathFromRoot.find('/')
@@ -22,8 +23,24 @@ class Album:
         else:
             self.collectionName = None
 
-    def getPathFromRoot(self, filename):
-        absoluteFilename = Path(filename).resolve()
+
+class AlbumPath:
+    def __init__(self, directoryName, root = None):
+        self.path = Path(directoryName)
+        self.root = root
+        self.exists = self.path.is_dir()
+
+    def relativeToRoot(self, filename):
+        path = Path(filename)
+        absoluteFilename = path.resolve()
         if str(absoluteFilename).startswith(str(self.root)) :
-            return str(absoluteFilename.parent)[len(str(self.root)) + 1:]
+            directory = absoluteFilename if not path.suffix else absoluteFilename.parent
+            return str(directory)[len(str(self.root)) + 1:]
         return None
+
+    def relativeToCollection(self, filename):
+        relativeToRoot = self.relativeToRoot(filename)
+        if relativeToRoot is None:
+            return None
+        firstSlash = relativeToRoot.find('/')
+        return relativeToRoot[firstSlash + 1:] if firstSlash > -1 else None
