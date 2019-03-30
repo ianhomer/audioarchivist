@@ -16,7 +16,7 @@ class TestSongAlbum(TestCase):
         filename = storage.tmp("mp3", "meta/album-master/my-album/Test001.mp3")
         album = Album(storage.tmpFilename("meta/album-master/my-album"))
         self.assertEqual(album.artist, "meta-artist")
-        self.assertEqual(album.album, "my-album")
+        self.assertEqual(album.name, "my-album")
         #self.assertEqual(len(album.songs), 2)
 
     def test_album_not_directory(self):

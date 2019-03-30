@@ -10,4 +10,6 @@ class Album:
         self.directoryName = directoryName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None else None
-        self.album = self.meta.album
+        self.name = self.meta.album
+        if self.name is None:
+            self.name = path.stem

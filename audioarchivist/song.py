@@ -79,7 +79,6 @@ def _Song__getMetadataFromFilename(album, filename):
     if naming == NAMING_TITLE_AND_ARTIST:
         artist = parts[1].strip() if len(parts) > 1 else "unknown"
     else:
-        album = parts[1].strip() if len(parts) > 1 else None
         artist = parts[2].strip() if len(parts) > 2 else "unknown"
     # If variation is specified in brackets
     search = re.search('(.*)(?:\(([^\)]*)\))', title)
@@ -87,16 +86,13 @@ def _Song__getMetadataFromFilename(album, filename):
         variation = search.group(2).strip()
     else:
         variation = None
-    album = path.parent.resolve().name
 
     if "song" in metadata:
         if "artist" in songMetadata:
             artist = songMetadata["artist"]
-        if "album" in songMetadata:
-            album = songMetadata["album"]
 
     return {
-        "album"         : album,
+        "album"         : album.name,
         "artist"        : artist,
         "naming"        : naming,
         "rootDirectory" : metadata["rootDirectory"],
