@@ -17,6 +17,7 @@ if taglib_spec is not None:
 from pathlib import Path
 from tinytag import TinyTag
 
+from .album import Album
 from .meta import Meta
 from .format import Format
 from .logger import warn, info
@@ -105,12 +106,13 @@ def _Song__getMetadataFromFilename(filename):
     }
 
 class Song:
-    def __init__(self, filename, byName = False):
+    def __init__(self, filename, byName = False, album = None):
         self.filename = filename
-        self.exists = os.path.exists(filename)
+        path = Path(filename)
+        self.album = Album(path.parent) if album is None else album
+        self.exists = path.exists()
         if not self.exists:
             warn(f"Song {filename} does not exist")
-        path = Path(filename)
         self.ext = path.suffix[1:].lower()
         self.basename = path.name
         self.tags = _Song__getMetadataFromFile(filename) if self.exists else {}

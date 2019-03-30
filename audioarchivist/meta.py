@@ -60,8 +60,7 @@ class Meta:
         self.data = metadata["data"]
         if self.data is None:
             self.data = {}
-        if "song" in self.data:
-            self.song = ObjectView(self.data["song"])
+        self.song = ObjectView(self.data["song"]) if "song" in self.data else None
         self.album = path.parent.resolve().name
         self.data["rootDirectory"] = metadata["rootDirectory"]
         debug(f"Meta : {self.data}")

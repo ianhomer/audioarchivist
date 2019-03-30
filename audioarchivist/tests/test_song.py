@@ -12,6 +12,7 @@ class TestSong(TestCase):
         self.assertEqual(song.artist, "Purpley")
         self.assertEqual(song.title, "Sound")
         self.assertTrue(song.stemAligned)
+        self.assertTrue(song.exists)
 
     def test_prototypes_song(self):
         song = Song(storage.filename("prototypes/Test000 - prototypes - Purpley.mp3"))
@@ -73,3 +74,7 @@ class TestSong(TestCase):
                     self.assertEqual(song.duration, meta["duration"])
                 if "samplerate" in meta:
                     self.assertEqual(song.samplerate, meta["samplerate"])
+
+    def test_song_not_exists(self):
+        song = Song(storage.filename("not-exists.wav"))
+        self.assertFalse(song.exists)
