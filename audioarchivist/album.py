@@ -10,9 +10,5 @@ class Album:
         self.directoryName = directoryName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
-        self.name = self.meta.album
-        if self.name is None:
-            self.name = path.stem
-        self.songMetadata = self.meta.data["song"] if "song" in self.meta.data else {}
-        if self.songMetadata is None:
-            self.songMetadata = {}
+        self.name = self.meta.album or path.stem
+        self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data else {}) or {}

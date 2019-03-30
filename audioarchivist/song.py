@@ -77,7 +77,7 @@ def _Song__getMetadataFromFilename(album, filename):
         artist = parts[2].strip() if len(parts) > 2 else "unknown"
     # If variation is specified in brackets
     search = re.search('(.*)(?:\(([^\)]*)\))', title)
-    if (search is not None):
+    if search is not None:
         variation = search.group(2).strip()
     else:
         variation = None
@@ -99,7 +99,7 @@ class Song:
     def __init__(self, filename, byName = False, album = None):
         self.filename = filename
         path = Path(filename)
-        self.album = Album(path.parent) if album is None else album
+        self.album = album or Album(path.parent)
         self.exists = path.exists()
         if not self.exists:
             warn(f"Song {filename} does not exist")
