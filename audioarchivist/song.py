@@ -111,12 +111,8 @@ class Song:
         self.rootDirectory = data["rootDirectory"]
         absoluteFilename = Path(filename).resolve()
         self.collectionName = self.album.collectionName
-        if self.collectionName :
-            self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.rootDirectory)) + 1:]
-            firstSlash = self.pathFromRoot.find('/')
-            self.pathInCollection = self.pathFromRoot[firstSlash + 1:]
-        else:
-            self.pathFromRoot = str(path.parent)
+        self.pathFromRoot = self.album.path.relativeToRoot(filename)
+        self.pathInCollection = self.album.path.relativeToCollection(filename)
 
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
@@ -208,7 +204,6 @@ class Song:
             if not pathFromRoot.startswith(self.collectionName + "/"):
                 for alternativeGlob in ALTERNATIVE_GLOBS:
                     alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot,self.standardFileTitleStem)
-                    print(alternativeDirectory)
                     globPattern = str(alternativeDirectory) + alternativeGlob
                     alternativeFiles = glob.glob(globPattern)
                     for alternativeFile in alternativeFiles:
