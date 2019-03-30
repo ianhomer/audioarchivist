@@ -14,21 +14,20 @@ class Album:
         self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data else {}) or {}
         self.root = self.meta.data["rootDirectory"]
         self.path = AlbumPath(directoryName, self.root)
-
-        absoluteFilename = self.path.path.resolve()
-        if str(absoluteFilename).startswith(str(self.root)) :
-            self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.root)) + 1:]
-            firstSlash = self.pathFromRoot.find('/')
-            self.collectionName = self.pathFromRoot[:firstSlash] if firstSlash > -1 else self.pathFromRoot
-        else:
-            self.collectionName = None
-
+        self.pathFromRoot = self.path.pathFromRoot
+        self.collectionName = self.path.collectionName
 
 class AlbumPath:
     def __init__(self, directoryName, root = None):
         self.path = Path(directoryName)
         self.root = root
         self.exists = self.path.is_dir()
+        self.pathFromRoot = self.relativeToRoot(str(self.path.resolve()))
+        if self.pathFromRoot is None:
+            self.collectionName = None
+        else:
+            firstSlash = self.pathFromRoot.find('/')
+            self.collectionName = self.pathFromRoot[:firstSlash] if firstSlash > -1 else self.pathFromRoot
 
     def relativeToRoot(self, filename):
         path = Path(filename)

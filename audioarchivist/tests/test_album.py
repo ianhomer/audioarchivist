@@ -41,6 +41,9 @@ class TestSongAlbum(TestCase):
     def test_paths(self):
         storage.tmp("meta-artist", "meta/album-master/my-album/.ameta.yaml")
         album = Album(storage.tmpFilename("meta/album-master/my-album"))
+        self.assertEqual(album.collectionName,"album-master")
+        self.assertEqual(album.pathFromRoot,"album-master/my-album")
+
         filename = storage.tmpFilename("meta/album-master/my-album/my-song.wav")
         self.assertEqual(album.path.relativeToRoot(filename), "album-master/my-album")
         self.assertEqual(album.path.relativeToCollection(filename), "my-album")
@@ -50,19 +53,22 @@ class TestSongAlbum(TestCase):
         filename = storage.tmpFilename("no-meta/album-master/my-album/my-song.wav")
         self.assertIsNone(albumPath.relativeToRoot("album-master/my-album"))
         self.assertIsNone(albumPath.relativeToCollection("album-master/my-album"))
+        self.assertIsNone(albumPath.collectionName)
+        self.assertIsNone(albumPath.pathFromRoot)
 
     def test_paths_on_root(self):
         root = storage.tmpFilename("no-meta")
         albumPath = AlbumPath(storage.tmpFilename("no-meta/album-master/my-album"), root)
         for tuple in [
-            [tmpFilename("no-meta/album-master/my-album-1/my-song.wav"),"album-master/my-album-1","my-album-1"],
-            [tmpFilename("no-meta/album-master/my-album-2/"),"album-master/my-album-2","my-album-2"],
-            [tmpFilename("no-meta/album-master/my-album-3/."),"album-master/my-album-3","my-album-3"],
-            [tmpFilename("no-meta/album-master/my-album-4"),"album-master/my-album-4","my-album-4"],
-            [tmpFilename("no-meta/album-master"),"album-master",None],
-            ["audioarchivist/tests/tmp/no-meta/album-master/my-album-5","album-master/my-album-5","my-album-5"],
-            ["audioarchivist/tests/tmp/no-meta/album-master","album-master",None]
+            [tmpFilename("no-meta/album-master/my-album-1/my-song.wav"),"album-master/my-album-1","my-album-1","album-master"],
+            [tmpFilename("no-meta/album-master/my-album-2/"),"album-master/my-album-2","my-album-2","album-master"],
+            [tmpFilename("no-meta/album-master/my-album-3/."),"album-master/my-album-3","my-album-3","album-master"],
+            [tmpFilename("no-meta/album-master/my-album-4"),"album-master/my-album-4","my-album-4","album-master"],
+            [tmpFilename("no-meta/album-master"),"album-master",None,"album-master"],
+            ["audioarchivist/tests/tmp/no-meta/album-master/my-album-5","album-master/my-album-5","my-album-5","album-master"],
+            ["audioarchivist/tests/tmp/no-meta/album-master","album-master",None,"album-master"]
 
         ]:
             self.assertEqual(albumPath.relativeToRoot(tuple[0]), tuple[1])
             self.assertEqual(albumPath.relativeToCollection(tuple[0]), tuple[2])
+            self.assertEqual(albumPath.collectionName, tuple[3])
