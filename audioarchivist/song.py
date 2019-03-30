@@ -65,8 +65,8 @@ def _Song__getMetadataFromFile(filename):
         traceback.print_exc()
     return data
 
-def _Song__getMetadataFromFilename(filename):
-    metadata = Meta(filename).data
+def _Song__getMetadataFromFilename(album, filename):
+    metadata = album.meta.data
     songMetadata = None
     if "song" in metadata:
         songMetadata = metadata["song"]
@@ -116,7 +116,7 @@ class Song:
         self.ext = path.suffix[1:].lower()
         self.basename = path.name
         self.tags = _Song__getMetadataFromFile(filename) if self.exists else {}
-        self.name = _Song__getMetadataFromFilename(filename)
+        self.name = _Song__getMetadataFromFilename(self.album, filename)
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
         self.rootDirectory = data["rootDirectory"]
         absoluteFilename = Path(filename).resolve()
