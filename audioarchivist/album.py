@@ -21,3 +21,9 @@ class Album:
             self.collectionName = self.pathFromRoot[:firstSlash] if firstSlash > -1 else self.pathFromRoot
         else:
             self.collectionName = None
+
+    def getPathFromRoot(self, filename):
+        absoluteFilename = Path(filename).resolve()
+        if str(absoluteFilename).startswith(str(self.root)) :
+            return str(absoluteFilename.parent)[len(str(self.root)) + 1:]
+        return None

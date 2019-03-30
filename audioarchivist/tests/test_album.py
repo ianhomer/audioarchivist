@@ -10,7 +10,6 @@ storage = Storage()
 
 class TestSongAlbum(TestCase):
     def test_album(self):
-        audioarchivist.logger.DEBUG = True
         storage.tmp("meta-artist", "meta/album-master/my-album/.ameta.yaml")
         filename = storage.tmp("mp3", "meta/album-master/my-album/Test000.mp3")
         filename = storage.tmp("mp3", "meta/album-master/my-album/Test001.mp3")
@@ -28,3 +27,15 @@ class TestSongAlbum(TestCase):
         except:
             exception = True
         self.assertTrue(exception)
+
+    def test_paths(self):
+        storage.tmp("meta-artist", "meta/album-master/my-album/.ameta.yaml")
+        album = Album(storage.tmpFilename("meta/album-master/my-album"))
+        filename = storage.tmpFilename("meta/album-master/my-album/my-song.wav")
+        self.assertEqual(album.getPathFromRoot(filename), "album-master/my-album")
+
+    def test_paths_no_meta(self):
+        storage.createTmpDirectory("no-meta/album-master/my-album")
+        album = Album(storage.tmpFilename("no-meta/album-master/my-album"))
+        filename = storage.tmpFilename("no-meta/album-master/my-album/my-song.wav")
+        self.assertIsNone(album.getPathFromRoot("album-master/my-album"))

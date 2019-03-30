@@ -26,6 +26,11 @@ class Storage:
     def tmpFilename(self, relativeFilename):
         return os.path.join(tmpDirectory, relativeFilename)
 
+    def createTmpDirectory(self, relativeFilename):
+        directory = os.path.join(tmpDirectory, relativeFilename)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
     def tmpRemove(self, name):
         path = Path(self.tmpFilename(name))
         if path.is_dir():

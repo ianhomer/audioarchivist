@@ -110,14 +110,13 @@ class Song:
         data = { **self.tags, **self.name } if byName else { **self.name, **self.tags }
         self.rootDirectory = data["rootDirectory"]
         absoluteFilename = Path(filename).resolve()
-        if str(absoluteFilename).startswith(str(self.rootDirectory)) :
+        self.collectionName = self.album.collectionName
+        if self.collectionName :
             self.pathFromRoot = str(absoluteFilename.parent)[len(str(self.rootDirectory)) + 1:]
             firstSlash = self.pathFromRoot.find('/')
-            self.collectionName = self.pathFromRoot[:firstSlash]
             self.pathInCollection = self.pathFromRoot[firstSlash + 1:]
         else:
             self.pathFromRoot = str(path.parent)
-            self.collectionName = None
 
         self.artist = data.get("artist", NA)
         self.album = data.get("album", NA)
