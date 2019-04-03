@@ -2,6 +2,9 @@ from termcolor import colored
 
 DEBUG = False
 
+def error(s):
+    print(colored("*** " + s + " ***","red"))
+
 def warn(s):
     print(colored("*** " + s,"red"))
 

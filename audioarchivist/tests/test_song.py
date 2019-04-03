@@ -11,6 +11,7 @@ class TestSong(TestCase):
         self.assertEqual(song.album, "My Album")
         self.assertEqual(song.artist, "Purpley")
         self.assertEqual(song.title, "Sound")
+        self.assertIsNone(song.pathFromRoot)
         self.assertTrue(song.stemAligned)
         self.assertTrue(song.exists)
 

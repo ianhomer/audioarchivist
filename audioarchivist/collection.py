@@ -4,6 +4,7 @@ from pathlib import Path
 from termcolor import colored
 
 from .song import Song
+from .logger import error
 
 audioExtensions = ["flac", "m4a", "mp3", "ogg", "wav"]
 NA = "n/a"
@@ -21,16 +22,26 @@ class Collection:
             )
         self.files.sort()
 
-    def process(self, do, args):
+    def process(self, do = {}, args = None):
         header = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
         lastPath = ""
+        if not "header" in do:
+            do["header"] = lambda s : None
+        if not "song" in do:
+            do["song"] = lambda s : None
+        if not "em" in do:
+            do["em"] = lambda s : None
 
         for file in self.files:
-            song = Song(file, args.byname)
+            song = Song(file, getattr(args, "byname", False))
             if song.collectionName is None:
                 path = song.pathFromRoot
             else:
                 path = song.pathInCollection
+
+            if path is None:
+                path = "."
+
             if (str(path) != lastPath):
                 do["header"]("")
                 do["header"](f"{path:>49s}/" + header)
@@ -54,8 +65,8 @@ class Collection:
             do["em"](f"{song.alt['stem']:101s} : " +
                 f"{song.alt['artist']:20s} : " +
                 f"{song.alt['title']:30s} : {song.alt['album']:20s}")
-            if args.save:
+            if getattr(args, "save", False):
                 song.save()
-            if not song.stemAligned and args.rename:
+            if not song.stemAligned and getattr(args, "rename", False):
                 do["info"](f"...Moving {song.filename} to {song.standardFilename}")
                 os.rename(song.filename, song.standardFilename)
