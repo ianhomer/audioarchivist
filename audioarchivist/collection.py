@@ -22,17 +22,19 @@ class Collection:
             )
         self.files.sort()
 
-    def process(self, do = {}, args = None):
+    def process(self, do = {}, state = None, args = None):
         header = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
         lastPath = ""
-        if not "header" in do:
-            do["header"] = lambda s : None
-        if not "song" in do:
-            do["song"] = lambda s : None
-        if not "em" in do:
-            do["em"] = lambda s : None
+        do["album"]("", state)
 
-        response = CollectionResponse()
+        if not "album" in do:
+            do["album"] = lambda s, state : None
+        if not "em" in do:
+            do["em"] = lambda s, state : None
+        if not "header" in do:
+            do["header"] = lambda s, state : None
+        if not "song" in do:
+            do["song"] = lambda s, state : None
 
         for file in self.files:
             song = Song(file, getattr(args, "byname", False))
@@ -45,17 +47,18 @@ class Collection:
                 path = "."
 
             if (str(path) != lastPath):
-                do["header"]("")
-                do["header"](f"{path:>49s}/" + header)
-                do["header"](190*"-")
+                do["album"]("", state)
+                do["header"]("", state)
+                do["header"](f"{path:>49s}/" + header, state)
+                do["header"](190*"-", state)
                 lastPath = path
-            self.processSong(response, song, do, args)
+            self.processSong(state, song, do, args)
             for alt in song.alternatives:
-                self.processSong(response, alt, do, args)
-        return response
+                self.processSong(state, alt, do, args)
 
-    def processSong(self, response, song, do, args):
-        response.count+=1
+        return state
+
+    def processSong(self, state, song, do, args):
         filesize = int(os.path.getsize(song.filename) / 1024)
         # Only display sample rate if not expected value
         unexpectedSamplerate = f"{int(song.samplerate/1000)}" if song.samplerate != EXPECTED_SAMPLE_RATE else ""
@@ -64,17 +67,29 @@ class Collection:
             f"{bitdepthOrRate} : {unexpectedSamplerate:>3s} : " +
             f"{filesize:6d} : " +
             f"{song.duration:5d} : {song.artist:20s} : " +
-            f"{song.title:30s} : {song.album:20s}")
+            f"{song.title:30s} : {song.album:20s}", state)
         if not song.aligned:
             do["em"](f"{song.alt['stem']:101s} : " +
                 f"{song.alt['artist']:20s} : " +
-                f"{song.alt['title']:30s} : {song.alt['album']:20s}")
+                f"{song.alt['title']:30s} : {song.alt['album']:20s}", state)
             if getattr(args, "save", False):
                 song.save()
             if not song.stemAligned and getattr(args, "rename", False):
-                do["info"](f"...Moving {song.filename} to {song.standardFilename}")
+                do["info"](f"...Moving {song.filename} to {song.standardFilename}", state)
                 os.rename(song.filename, song.standardFilename)
 
-class CollectionResponse:
+class CollectionStatistics:
     def __init__(self):
-        self.count = 0
+        self.albumCount = 0
+        self.songCount = 0
+        self.songs = []
+
+    def incrementAlbum(self):
+        self.albumCount += 1
+
+    def incrementSong(self):
+        self.songCount += 1
+
+    def storeSong(self, song):
+        self.incrementSong()
+        self.songs.append(song)

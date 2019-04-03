@@ -19,8 +19,8 @@ def run():
     parser.add_argument('-r', '--rename', action='store_true', help='Rename file to standard naming', default=False)
     args = parser.parse_args()
     Collection(".").process({
-        "song"  : lambda s: print(s),
-        "header": lambda s: print(s),
-        "info"  : info,
-        "em"    : lambda s : print(colored(s,"blue"))
-    }, args)
+        "song"  : lambda s, state : print(s),
+        "header": lambda s, state : print(s),
+        "info"  : lambda s, state : info(s),
+        "em"    : lambda s, state : print(colored(s,"blue"))
+    }, args = args)
