@@ -9,6 +9,7 @@ from mutagen.wavpack import WavPack
 from tinytag import TinyTag
 from termcolor import colored
 
+from .logger import warn, info
 from .collection import Collection
 
 def run():
@@ -17,4 +18,9 @@ def run():
     parser.add_argument('-s', '--save', action='store_true', help='Save tags to audio file', default=False)
     parser.add_argument('-r', '--rename', action='store_true', help='Rename file to standard naming', default=False)
     args = parser.parse_args()
-    Collection(".").print(args)
+    Collection(".").process({
+        "song"  : lambda s: print(s),
+        "header": lambda s: print(s),
+        "info"  : info,
+        "em"    : lambda s : print(colored(s,"blue"))
+    }, args)
