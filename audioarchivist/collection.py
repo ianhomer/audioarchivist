@@ -13,7 +13,7 @@ EXPECTED_SAMPLE_RATE = 44100
 class Collection:
     def __init__(self, directoryName):
         self.files = []
-        for (dirpath, dirnames, filenames) in os.walk("."):
+        for (dirpath, dirnames, filenames) in os.walk(directoryName):
             self.files.extend(list(
                 map(
                     lambda name : os.path.join(dirpath, name),
@@ -32,6 +32,8 @@ class Collection:
         if not "em" in do:
             do["em"] = lambda s : None
 
+        response = CollectionResponse()
+
         for file in self.files:
             song = Song(file, getattr(args, "byname", False))
             if song.collectionName is None:
@@ -47,11 +49,13 @@ class Collection:
                 do["header"](f"{path:>49s}/" + header)
                 do["header"](190*"-")
                 lastPath = path
-            self.processSong(song, do, args)
+            self.processSong(response, song, do, args)
             for alt in song.alternatives:
-                self.processSong(alt, do, args)
+                self.processSong(response, alt, do, args)
+        return response
 
-    def processSong(self, song, do, args):
+    def processSong(self, response, song, do, args):
+        response.count+=1
         filesize = int(os.path.getsize(song.filename) / 1024)
         # Only display sample rate if not expected value
         unexpectedSamplerate = f"{int(song.samplerate/1000)}" if song.samplerate != EXPECTED_SAMPLE_RATE else ""
@@ -70,3 +74,7 @@ class Collection:
             if not song.stemAligned and getattr(args, "rename", False):
                 do["info"](f"...Moving {song.filename} to {song.standardFilename}")
                 os.rename(song.filename, song.standardFilename)
+
+class CollectionResponse:
+    def __init__(self):
+        self.count = 0
