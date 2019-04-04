@@ -28,6 +28,7 @@ class TestSongAlbum(TestCase):
         self.assertEqual(album.collectionName, "album-master")
         self.assertEqual(len(album.children), 2)
         self.assertEqual(len(album.songFileNames), 2)
+        self.assertEqual(len(album.songs), 2)
 
     def test_album_not_directory(self):
         storage.tmp("meta-artist", "meta/album-master/my-album/.ameta.yaml")

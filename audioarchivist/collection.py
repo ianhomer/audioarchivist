@@ -35,12 +35,11 @@ class Collection:
 
     def processAlbum(self, album, do, args):
         lastPath = ""
-        songFileNames = album.songFileNames
-        if len(songFileNames) > 0:
+        songs = album.songs
+        if len(songs) > 0:
             do["album"](album.directoryName)
 
-        for filename in songFileNames:
-            song = Song(album.directoryName + "/" + filename, getattr(args, "byname", False))
+        for song in songs:
             if song.collectionName is None:
                 path = song.pathFromRoot
             else:

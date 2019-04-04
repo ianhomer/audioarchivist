@@ -36,7 +36,7 @@ class TestSong(TestCase):
         self.assertFalse(song.stemAligned)
         self.assertEqual(song.alt['title'], "Title Misaligned")
         # when load with naming flag
-        song = Song(filename, True)
+        song = Song(filename, byName = True)
         # then title comes from file name
         self.assertEqual(song.title, "Title Misaligned")
 

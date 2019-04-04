@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from .meta import Meta
+from .coresong import CoreSong
 
 AUDIO_EXTENSIONS = [".flac", ".m4a", ".mp3", ".ogg", ".wav"]
 
@@ -34,6 +35,14 @@ class Album:
     @property
     def songFileNames(self):
         return sorted([f.name for f in self.path.path.iterdir() if (not f.is_dir()) and f.suffix in AUDIO_EXTENSIONS])
+
+    @property
+    def songs(self):
+        songs = []
+        for name in self.songFileNames:
+            songs.append(CoreSong(self.directoryName + "/" + name, self))
+
+        return songs
 
     def allContainedDirectoryNames(self):
         return self.childDirectories()
