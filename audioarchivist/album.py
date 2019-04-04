@@ -32,14 +32,7 @@ class Album:
         return albums
 
     @property
-    def songs(self):
-        albums = []
-        for name in self.childDirectories():
-            albums.append(Song(self.directoryName + "/" + name, self.byName))
-
-        return albums
-
-    def childFiles(self):
+    def songFileNames(self):
         return sorted([f.name for f in self.path.path.iterdir() if (not f.is_dir()) and f.suffix in AUDIO_EXTENSIONS])
 
     def allContainedDirectoryNames(self):

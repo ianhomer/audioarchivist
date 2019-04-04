@@ -28,18 +28,18 @@ class Collection:
         for directoryName in Album(self.directoryName).allContainedDirectoryNames():
             self.processAlbum(
                 Album(
-                    self.directoryName + "/" + directoryName, 
+                    self.directoryName + "/" + directoryName,
                     getattr(args, "byname", False)
                 ), do, args
             )
 
     def processAlbum(self, album, do, args):
         lastPath = ""
-        childFiles = album.childFiles()
-        if len(childFiles) > 0:
+        songFileNames = album.songFileNames
+        if len(songFileNames) > 0:
             do["album"](album.directoryName)
 
-        for filename in album.childFiles():
+        for filename in songFileNames:
             song = Song(album.directoryName + "/" + filename, getattr(args, "byname", False))
             if song.collectionName is None:
                 path = song.pathFromRoot
