@@ -25,7 +25,6 @@ class Collection:
     def process(self, do = {}, state = None, args = None):
         header = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
         lastPath = ""
-        do["album"]("", state)
 
         if not "album" in do:
             do["album"] = lambda s, state : None
@@ -35,6 +34,8 @@ class Collection:
             do["header"] = lambda s, state : None
         if not "song" in do:
             do["song"] = lambda s, state : None
+
+        do["album"]("", state)
 
         for file in self.files:
             song = Song(file, getattr(args, "byname", False))
