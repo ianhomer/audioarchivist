@@ -25,13 +25,12 @@ class Collection:
         if not "song" in do:
             do["song"] = lambda o : None
 
-        for directoryName in Album(self.directoryName).allContainedDirectoryNames():
-            self.processAlbum(
-                Album(
-                    self.directoryName + "/" + directoryName,
-                    getattr(args, "byname", False)
-                ), do, args
-            )
+        self.processAlbum(
+            Album(
+                self.directoryName,
+                getattr(args, "byname", False)
+            ), do, args
+        )
 
     def processAlbum(self, album, do, args):
         lastPath = ""

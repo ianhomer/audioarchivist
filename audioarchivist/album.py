@@ -28,7 +28,7 @@ class Album:
     def children(self):
         albums = []
         for name in self.childDirectories():
-            albums.append(Album(self.directoryName + "/" + name))
+            albums.append(Album(self.directoryName + "/" + name, byName = self.byName))
 
         return albums
 
@@ -43,9 +43,6 @@ class Album:
             songs.append(CoreSong(self.directoryName + "/" + name, self))
 
         return songs
-
-    def allContainedDirectoryNames(self):
-        return self.childDirectories()
 
     def __repr__(self):
         return f"Album : {self.directoryName}"
