@@ -9,35 +9,36 @@ storage = Storage()
 class TestCollection(TestCase):
     def test_song_collection(self):
         filenames = [
-            "collection/samples-1/test 1.mp3",
-            "collection/samples-1/test 2.mp3",
-            "collection/samples-2/test 3.mp3"
+            "collections/collection-1/samples-1/test 1.mp3",
+            "collections/collection-1/samples-1/test 2.mp3",
+            "collections/collection-1/samples-2/test 3.mp3",
+            "collections/collection-2/samples-1/test 4.mp3"
         ]
 
         for filename in filenames:
             storage.tmp("mp3", filename)
 
-        statistics = CollectionStatistics()
-        Collection(storage.tmpFilename("collection")).process({
-            "album" : statistics.incrementAlbum,
-            "song"  : statistics.storeSong,
+        state = CollectionState()
+        Collection(storage.tmpFilename("collections/collection-1")).process({
+            "album" : state.incrementAlbum,
+            "song"  : state.storeSong,
         })
-        self.assertEqual(statistics.songCount, 3)
-        self.assertEqual(statistics.albumCount, 2)
+        self.assertEqual(state.songCount, 3)
+        self.assertEqual(state.albumCount, 2)
 
-        self.assertEqual("|".join(statistics.songs).replace(" ", ""),
+        self.assertEqual("|".join(state.songs).replace(" ", ""),
             "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes|" +
             "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes|" +
             "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes"
         )
 
-        statistics = CollectionStatistics()
-        Collection(storage.tmpFilename("collection")).process({
-            "album" : statistics.incrementAlbum,
-            "song"  : statistics.storeSong,
+        state = CollectionState()
+        Collection(storage.tmpFilename("collections/collection-1")).process({
+            "album" : state.incrementAlbum,
+            "song"  : state.storeSong,
         }, args = MockArgs(True) )
 
-        self.assertEqual("|".join(statistics.songs).replace(" ", ""),
+        self.assertEqual("|".join(state.songs).replace(" ", ""),
             "test1:None:mp3:32::4:1:unknown:test1:samples-1|" +
             "test2:None:mp3:32::4:1:unknown:test2:samples-1|" +
             "test3:None:mp3:32::4:1:unknown:test3:samples-2"
@@ -50,7 +51,7 @@ class MockArgs:
     def __init__(self, byname):
         self.byname = byname
 
-class CollectionStatistics:
+class CollectionState:
     def __init__(self):
         self.albumCount = 0
         self.songCount = 0
