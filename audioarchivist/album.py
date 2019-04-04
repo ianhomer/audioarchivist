@@ -5,11 +5,12 @@ from .meta import Meta
 AUDIO_EXTENSIONS = [".flac", ".m4a", ".mp3", ".ogg", ".wav"]
 
 class Album:
-    def __init__(self, directoryName):
+    def __init__(self, directoryName, byName = False):
         if not Path(directoryName).is_dir():
             raise Exception(f"Cannot create album from {directoryName} since not a directory")
 
         self.directoryName = directoryName
+        self.byName = byName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
         self.name = self.meta.album or path.stem
@@ -22,10 +23,19 @@ class Album:
     def childDirectories(self):
         return sorted([f.name for f in self.path.path.iterdir() if f.is_dir()])
 
-    def childAlbums(self):
+    @property
+    def children(self):
         albums = []
         for name in self.childDirectories():
             albums.append(Album(self.directoryName + "/" + name))
+
+        return albums
+
+    @property
+    def songs(self):
+        albums = []
+        for name in self.childDirectories():
+            albums.append(Song(self.directoryName + "/" + name, self.byName))
 
         return albums
 

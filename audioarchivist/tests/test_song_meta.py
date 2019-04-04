@@ -12,9 +12,9 @@ class TestSongMeta(TestCase):
         filename = storage.tmp("mp3", "meta/test/meta/Test000.mp3")
         song = Song(filename)
         self.assertEqual("Purpley", song.artist)
-        
+
         # When load by name
-        song = Song(filename, True)
+        song = Song(filename, byName = True)
         self.assertEqual("meta-artist", song.artist)
 
         # Given alternative is available

@@ -15,10 +15,18 @@ class TestSongAlbum(TestCase):
         storage.tmp("meta-artist", "meta/album-master/my-album/.ameta.yaml")
         filename = storage.tmp("mp3", "meta/album-master/my-album/Test000.mp3")
         filename = storage.tmp("mp3", "meta/album-master/my-album/Test001.mp3")
+        filename = storage.tmp("mp3", "meta/album-master/my-album/my-child-1/Test002.mp3")
+        filename = storage.tmp("mp3", "meta/album-master/my-album/my-child-1/Test003.mp3")
+        filename = storage.tmp("mp3", "meta/album-master/my-album/my-child-2/Test004.mp3")
+        filename = storage.tmp("mp3", "meta/album-master/my-album/my-child-2/my-grandchild-1/Test005.mp3")
+        filename = storage.tmp("mp3", "meta/album-release/my-album/Test006.mp3")
+        filename = storage.tmp("mp3", "meta/album-release/my-album/my-child-3/Test007.mp3")
+
         album = Album(storage.tmpFilename("meta/album-master/my-album"))
         self.assertEqual(album.artist, "meta-artist")
         self.assertEqual(album.name, "my-album")
         self.assertEqual(album.collectionName, "album-master")
+        self.assertEqual(len(album.children), 2)
         #self.assertEqual(len(album.songs), 2)
 
     def test_album_not_directory(self):

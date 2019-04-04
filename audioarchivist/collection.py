@@ -26,7 +26,12 @@ class Collection:
             do["song"] = lambda o : None
 
         for directoryName in Album(self.directoryName).allContainedDirectoryNames():
-            self.processAlbum(Album(self.directoryName + "/" + directoryName), do, args)
+            self.processAlbum(
+                Album(
+                    self.directoryName + "/" + directoryName, 
+                    getattr(args, "byname", False)
+                ), do, args
+            )
 
     def processAlbum(self, album, do, args):
         lastPath = ""
@@ -51,7 +56,7 @@ class Collection:
                 lastPath = path
             self.processSong(song, do, args)
 
-        for child in album.childAlbums():
+        for child in album.children:
             self.processAlbum(child, do, args)
 
     def processSong(self, song, do, args):
