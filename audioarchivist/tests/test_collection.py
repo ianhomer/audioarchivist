@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase
 
-from audioarchivist.collection import Collection, CollectionStatistics
+from audioarchivist.collection import Collection
 from storage import Storage
 
 storage = Storage()
@@ -16,10 +16,12 @@ class TestCollection(TestCase):
 
         for filename in filenames:
             storage.tmp("mp3", filename)
-        statistics = Collection(storage.tmpFilename("collection")).process({
-            "album" : lambda s, statistics : statistics.incrementAlbum(),
-            "song"  : lambda s, statistics : statistics.storeSong(s),
-        }, state = CollectionStatistics())
+
+        statistics = CollectionStatistics()
+        Collection(storage.tmpFilename("collection")).process({
+            "album" : statistics.incrementAlbum,
+            "song"  : statistics.storeSong,
+        })
         self.assertEqual(statistics.songCount, 3)
         self.assertEqual(statistics.albumCount, 2)
 
@@ -29,10 +31,11 @@ class TestCollection(TestCase):
             "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes"
         )
 
-        statistics = Collection(storage.tmpFilename("collection")).process({
-            "album" : lambda s, statistics : statistics.incrementAlbum(),
-            "song"  : lambda s, statistics : statistics.storeSong(s),
-        }, state = CollectionStatistics(), args = MockArgs(True) )
+        statistics = CollectionStatistics()
+        Collection(storage.tmpFilename("collection")).process({
+            "album" : statistics.incrementAlbum,
+            "song"  : statistics.storeSong,
+        }, args = MockArgs(True) )
 
         self.assertEqual("|".join(statistics.songs).replace(" ", ""),
             "test1:None:mp3:32::4:1:unknown:test1:samples-1|" +
@@ -46,3 +49,19 @@ class TestCollection(TestCase):
 class MockArgs:
     def __init__(self, byname):
         self.byname = byname
+
+class CollectionStatistics:
+    def __init__(self):
+        self.albumCount = 0
+        self.songCount = 0
+        self.songs = []
+
+    def incrementAlbum(self, album):
+        self.albumCount += 1
+
+    def incrementSong(self):
+        self.songCount += 1
+
+    def storeSong(self, song):
+        self.incrementSong()
+        self.songs.append(song)
