@@ -58,6 +58,7 @@ class CollectionState:
         self.songs = []
 
     def incrementAlbum(self, album):
+        print("Album = " + album)
         self.albumCount += 1
 
     def incrementSong(self):
@@ -65,4 +66,5 @@ class CollectionState:
 
     def storeSong(self, song):
         self.incrementSong()
+        print(song)
         self.songs.append(song)

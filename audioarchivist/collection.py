@@ -3,29 +3,19 @@ import os
 from pathlib import Path
 from termcolor import colored
 
-from .song import Song
+from .album import Album
 from .logger import error
+from .song import Song
 
-audioExtensions = ["flac", "m4a", "mp3", "ogg", "wav"]
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44100
+HEADER = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
 
 class Collection:
     def __init__(self, directoryName):
-        self.files = []
-        for (dirpath, dirnames, filenames) in os.walk(directoryName):
-            self.files.extend(list(
-                map(
-                    lambda name : os.path.join(dirpath, name),
-                    filter(lambda f : Path(f).suffix[1:].lower() in audioExtensions, filenames))
-                )
-            )
-        self.files.sort()
+        self.directoryName = directoryName
 
     def process(self, do = {}, args = None):
-        header = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
-        lastPath = ""
-
         if not "album" in do:
             do["album"] = lambda o : None
         if not "em" in do:
@@ -35,10 +25,17 @@ class Collection:
         if not "song" in do:
             do["song"] = lambda o : None
 
-        do["album"]("")
+        for directoryName in Album(self.directoryName).allContainedDirectoryNames():
+            self.processAlbum(Album(self.directoryName + "/" + directoryName), do, args)
 
-        for file in self.files:
-            song = Song(file, getattr(args, "byname", False))
+    def processAlbum(self, album, do, args):
+        lastPath = ""
+        childFiles = album.childFiles()
+        if len(childFiles) > 0:
+            do["album"](album.directoryName)
+
+        for filename in album.childFiles():
+            song = Song(album.directoryName + "/" + filename, getattr(args, "byname", False))
             if song.collectionName is None:
                 path = song.pathFromRoot
             else:
@@ -48,14 +45,14 @@ class Collection:
                 path = "."
 
             if (str(path) != lastPath):
-                do["album"]("")
                 do["header"]("")
-                do["header"](f"{path:>49s}/" + header)
+                do["header"](f"{path:>49s}/" + HEADER)
                 do["header"](190*"-")
                 lastPath = path
             self.processSong(song, do, args)
-            for alt in song.alternatives:
-                self.processSong(alt, do, args)
+
+        for child in album.childAlbums():
+            self.processAlbum(child, do, args)
 
     def processSong(self, song, do, args):
         filesize = int(os.path.getsize(song.filename) / 1024)

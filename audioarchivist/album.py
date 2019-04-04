@@ -2,6 +2,8 @@ from pathlib import Path
 
 from .meta import Meta
 
+AUDIO_EXTENSIONS = [".flac", ".m4a", ".mp3", ".ogg", ".wav"]
+
 class Album:
     def __init__(self, directoryName):
         if not Path(directoryName).is_dir():
@@ -17,17 +19,38 @@ class Album:
         self.pathFromRoot = self.path.pathFromRoot
         self.collectionName = self.path.collectionName
 
+    def childDirectories(self):
+        return sorted([f.name for f in self.path.path.iterdir() if f.is_dir()])
+
+    def childAlbums(self):
+        albums = []
+        for name in self.childDirectories():
+            albums.append(Album(self.directoryName + "/" + name))
+
+        return albums
+
+    def childFiles(self):
+        return sorted([f.name for f in self.path.path.iterdir() if (not f.is_dir()) and f.suffix in AUDIO_EXTENSIONS])
+
+    def allContainedDirectoryNames(self):
+        return self.childDirectories()
+
+    def __repr__(self):
+        return f"Album : {self.directoryName}"
+
 class AlbumPath:
     def __init__(self, directoryName, root = None):
         self.path = Path(directoryName)
         self.root = root
         self.exists = self.path.is_dir()
-        self.pathFromRoot = self.relativeToRoot(str(self.path.resolve()))
+        resolvedPath = str(self.path.resolve())
+        self.pathFromRoot = self.relativeToRoot(resolvedPath)
         if self.pathFromRoot is None:
             self.collectionName = None
         else:
             firstSlash = self.pathFromRoot.find('/')
             self.collectionName = self.pathFromRoot[:firstSlash] if firstSlash > -1 else self.pathFromRoot
+            self.pathFromCollection = self.relativeToCollection(resolvedPath)
 
     def relativeToRoot(self, filename):
         path = Path(filename)
