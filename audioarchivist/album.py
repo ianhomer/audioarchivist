@@ -37,13 +37,19 @@ class Album:
 
     @property
     def childDirectories(self):
-        return sorted([f.name for f in self.path.path.iterdir() if f.is_dir()])
+        childDirectories = []
+        for a in self.alternatives:
+            childDirectories.extend([f.name for f in a.path.path.iterdir() if f.is_dir() and not f.name.startswith(".")])
+        return sorted(set(childDirectories))
 
     @property
     def children(self):
         albums = []
         for name in self.childDirectories:
-            albums.append(Album(self.directoryName + "/" + name, byName = self.byName))
+            for a in self.alternatives:
+                childDirectoryName = a.directoryName + "/" + name
+                if Path(childDirectoryName).is_dir():
+                    albums.append(Album(childDirectoryName, byName = self.byName))
 
         return albums
 
@@ -58,6 +64,10 @@ class Album:
             songs.append(CoreSong(self.directoryName + "/" + name, self))
 
         return songs
+
+    @property
+    def hasSongs(self):
+        return len(self.songFileNames) > 0
 
     def __repr__(self):
         return f"Album : {self.directoryName}"

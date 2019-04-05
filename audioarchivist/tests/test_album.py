@@ -26,7 +26,7 @@ class TestSongAlbum(TestCase):
         self.assertEqual(album.artist, "meta-artist")
         self.assertEqual(album.name, "my-album")
         self.assertEqual(album.collectionName, "album-master")
-        self.assertEqual(len(album.children), 2)
+        self.assertEqual(len(album.children), 3)
         self.assertEqual(len(album.songFileNames), 2)
         self.assertEqual(len(album.songs), 2)
 
