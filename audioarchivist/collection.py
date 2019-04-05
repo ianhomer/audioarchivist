@@ -34,25 +34,32 @@ class Collection:
 
     def processAlbum(self, album, do, args):
         lastPath = ""
-        songs = album.songs
-        if len(songs) > 0:
+        hasSongs = False
+
+        for a in album.alternatives:
+            songs = a.songs
+            if len(a.songs) > 0:
+                hasSongs = True
+
+            for song in songs:
+                if song.collectionName is None:
+                    path = song.pathFromRoot
+                else:
+                    path = song.pathInCollection
+
+                if path is None:
+                    path = "."
+
+                if (str(path) != lastPath):
+                    do["header"]("")
+                    do["header"](f"{path:>49s}/" + HEADER)
+                    do["header"](190*"-")
+                    lastPath = path
+                if not args.albumsonly:
+                    self.processSong(song, do, args)
+
+        if hasSongs:
             do["album"](album.directoryName)
-
-        for song in songs:
-            if song.collectionName is None:
-                path = song.pathFromRoot
-            else:
-                path = song.pathInCollection
-
-            if path is None:
-                path = "."
-
-            if (str(path) != lastPath):
-                do["header"]("")
-                do["header"](f"{path:>49s}/" + HEADER)
-                do["header"](190*"-")
-                lastPath = path
-            self.processSong(song, do, args)
 
         for child in album.children:
             self.processAlbum(child, do, args)

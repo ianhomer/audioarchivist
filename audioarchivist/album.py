@@ -7,10 +7,10 @@ AUDIO_EXTENSIONS = [".flac", ".m4a", ".mp3", ".ogg", ".wav"]
 
 class Album:
     def __init__(self, directoryName, byName = False):
+        self.directoryName = directoryName
         if not Path(directoryName).is_dir():
             raise Exception(f"Cannot create album from {directoryName} since not a directory")
 
-        self.directoryName = directoryName
         self.byName = byName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
@@ -20,14 +20,29 @@ class Album:
         self.path = AlbumPath(directoryName, self.root)
         self.pathFromRoot = self.path.pathFromRoot
         self.collectionName = self.path.collectionName
+        if not self.pathFromRoot is None:
+            self.collections = sorted([f.name for f in Path(self.root).iterdir() if not f.name.startswith(".") and f.is_dir()])
 
+    @property
+    def alternatives(self):
+        alternatives = []
+        if hasattr(self, "collections") and self.path.pathFromCollection:
+            for collectionName in self.collections:
+                alternativeDirectoryName = self.root.joinpath(collectionName,self.path.pathFromCollection).as_posix()
+                if Path(alternativeDirectoryName).is_dir():
+                    alternatives.append(Album(alternativeDirectoryName, byName = self.byName))
+            return alternatives
+        else:
+            return [self]
+
+    @property
     def childDirectories(self):
         return sorted([f.name for f in self.path.path.iterdir() if f.is_dir()])
 
     @property
     def children(self):
         albums = []
-        for name in self.childDirectories():
+        for name in self.childDirectories:
             albums.append(Album(self.directoryName + "/" + name, byName = self.byName))
 
         return albums

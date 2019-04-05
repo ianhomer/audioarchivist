@@ -81,3 +81,22 @@ class TestSongAlbum(TestCase):
             self.assertEqual(albumPath.relativeToRoot(tuple[0]), tuple[1])
             self.assertEqual(albumPath.relativeToCollection(tuple[0]), tuple[2])
             self.assertEqual(albumPath.collectionName, tuple[3])
+
+    def test_album_path_collections(self):
+        files = [
+            "meta-album-path-collections/collection-1/my-album-1/Test000.mp3",
+            "meta-album-path-collections/collection-1/my-album-1/Test001.mp3",
+            "meta-album-path-collections/collection-2/my-album-1/Test002.mp3",
+            "meta-album-path-collections/collection-3/my-album-1/Test003.mp3",
+            "meta-album-path-collections/collection-4/my-album-2/Test004.mp3",
+        ]
+        for filename in files:
+            storage.tmp("mp3", filename)
+        album = Album(storage.tmpFilename("meta-album-path-collections"))
+        self.assertEqual(len(album.collections), 4)
+        album = Album(storage.tmpFilename("meta-album-path-collections/collection-1/my-album-1"))
+        self.assertEqual(len(album.collections), 4)
+        self.assertEqual(len(album.alternatives), 3)
+
+        for filename in files:
+            storage.tmpRemove(filename)

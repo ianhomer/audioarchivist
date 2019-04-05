@@ -14,6 +14,7 @@ from .collection import Collection
 
 def run():
     parser = argparse.ArgumentParser(description='Display Audio File meta data.')
+    parser.add_argument('-a', '--albumsonly', action='store_true', help='Only display albums', default=False)
     parser.add_argument('-n', '--byname', action='store_true', help='Take metadata from file naming as precedence', default=False)
     parser.add_argument('-s', '--save', action='store_true', help='Save tags to audio file', default=False)
     parser.add_argument('-r', '--rename', action='store_true', help='Rename file to standard naming', default=False)

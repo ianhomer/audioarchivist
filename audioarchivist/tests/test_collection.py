@@ -8,48 +8,48 @@ storage = Storage()
 
 class TestCollection(TestCase):
     def test_song_collection(self):
+        self.maxDiff = None
         filenames = [
-            "collections/collection-1/samples-1/test 1.mp3",
-            "collections/collection-1/samples-1/test 2.mp3",
-            "collections/collection-1/samples-2/test 3.mp3",
-            "collections/collection-2/samples-1/test 4.mp3"
+            "meta-collections/collection-1/samples-1/test 1.mp3",
+            "meta-collections/collection-1/samples-1/test 2.mp3",
+            "meta-collections/collection-1/samples-2/test 3.mp3",
+            "meta-collections/collection-2/samples-1/test 4.mp3",
+            "meta-collections/collection-2/samples-1/test 5.mp3"
         ]
 
         for filename in filenames:
             storage.tmp("mp3", filename)
 
         state = CollectionState()
-        Collection(storage.tmpFilename("collections/collection-1")).process({
-            "album" : state.incrementAlbum,
-            "song"  : state.storeSong,
-        })
-        self.assertEqual(state.songCount, 3)
-        self.assertEqual(state.albumCount, 2)
+        Collection(storage.tmpFilename("meta-collections/collection-1/samples-1")).process(state.collector, args = MockArgs(False, False))
+        self.assertEqual(state.songCount, 4)
+        self.assertEqual(state.albumCount, 1)
 
         self.assertEqual("|".join(state.songs).replace(" ", ""),
-            "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes|" +
-            "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes|" +
-            "Test000:None:mp3:32::4:1:Purpley:Test000:prototypes"
+            "Test000:collection-1:mp3:32::4:1:Purpley:Test000:prototypes|" +
+            "Test000:collection-1:mp3:32::4:1:Purpley:Test000:prototypes|" +
+            "Test000:collection-2:mp3:32::4:1:Purpley:Test000:prototypes|" +
+            "Test000:collection-2:mp3:32::4:1:Purpley:Test000:prototypes"
         )
 
         state = CollectionState()
-        Collection(storage.tmpFilename("collections/collection-1")).process({
-            "album" : state.incrementAlbum,
-            "song"  : state.storeSong,
-        }, args = MockArgs(True) )
+        Collection(storage.tmpFilename("meta-collections/collection-1")).process(state.collector, args = MockArgs(True, False) )
 
         self.assertEqual("|".join(state.songs).replace(" ", ""),
-            "test1:None:mp3:32::4:1:unknown:test1:samples-1|" +
-            "test2:None:mp3:32::4:1:unknown:test2:samples-1|" +
-            "test3:None:mp3:32::4:1:unknown:test3:samples-2"
+            "test1:collection-1:mp3:32::4:1:unknown:test1:samples-1|" +
+            "test2:collection-1:mp3:32::4:1:unknown:test2:samples-1|" +
+            "test4:collection-2:mp3:32::4:1:unknown:test4:samples-1|" +
+            "test5:collection-2:mp3:32::4:1:unknown:test5:samples-1|" +
+            "test3:collection-1:mp3:32::4:1:unknown:test3:samples-2"
         )
 
         for filename in filenames:
             storage.tmpRemove(filename)
 
 class MockArgs:
-    def __init__(self, byname):
+    def __init__(self, byname, albumsonly):
         self.byname = byname
+        self.albumsonly = albumsonly
 
 class CollectionState:
     def __init__(self):
@@ -68,3 +68,10 @@ class CollectionState:
         self.incrementSong()
         print(song)
         self.songs.append(song)
+
+    @property
+    def collector(self):
+        return {
+            "album" : self.incrementAlbum,
+            "song"  : self.storeSong,
+        }
