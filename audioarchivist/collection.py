@@ -77,7 +77,7 @@ class Collection:
             f"{song.duration:5d} : {song.artist:20s} : " +
             f"{song.title:30s} : {song.album:20s}")
         if not song.aligned:
-            do["em"](f"{song.alt['stem']:101s} : " +
+            do["em"](f"{song.alt['stem']:102s} : " +
                 f"{song.alt['artist']:20s} : " +
                 f"{song.alt['title']:30s} : {song.alt['album']:20s}")
             if getattr(args, "save", False):
