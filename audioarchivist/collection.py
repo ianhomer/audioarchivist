@@ -9,7 +9,7 @@ from .song import Song
 
 NA = "n/a"
 EXPECTED_SAMPLE_RATE = 44100
-HEADER = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>5s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
+HEADER = f" : {'':10s} : {'ext':4s} : {'kb/s':>5s} : {'khz':3s} : {'kb':>6s} : {'s':>6s} : {'artist':20s} : {'title':30s} : {'album':20s}"
 
 class Collection:
     def __init__(self, directoryName):
@@ -73,7 +73,7 @@ class Collection:
         bitdepthOrRate = colored(f"  s{song.bitdepth:2d}",'blue') if song.bitdepth > 0 else f"{song.bitrate:5d}"
         do["song"](f"{song.standardFileTitleStem:50s} : {song.collectionName!s:10s} : {song.ext:4s} : " +
             f"{bitdepthOrRate} : {unexpectedSamplerate:>3s} : " +
-            f"{filesize:6d} : " +
+            f"{filesize:7d} : " +
             f"{song.duration:5d} : {song.artist:20s} : " +
             f"{song.title:30s} : {song.album:20s}")
         if not song.aligned:
