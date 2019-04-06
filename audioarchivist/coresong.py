@@ -52,6 +52,14 @@ def _CoreSong__getMetadataFromFile(filename):
         elif ext == "wav":
             data["bitdepth"] = wave.open(filename).getsampwidth() * 8
             data["bitrate"] = tag.bitrate
+            audiofile = taglib.File(filename)
+            # Special case where tinytag couldn't extract tags for wav
+            if tag.album is None and "ALBUM" in audiofile.tags and audiofile.tags["ALBUM"][0] :
+                data["album"] = audiofile.tags["ALBUM"][0]
+            if tag.artist is None and "ARTIST" in audiofile.tags and audiofile.tags["ARTIST"][0] :
+                data["artist"] = audiofile.tags["ARTIST"][0]
+            if tag.title is None and "TITLE" in audiofile.tags and audiofile.tags["TITLE"][0] :
+                data["title"] = audiofile.tags["TITLE"][0]
         elif tag.bitrate is None or tag.bitrate > 1000:
             # some m4a files are coming in with bitrates > 300,000 and not matching
             # ffmpeg output, so we'll use mutagen instead
@@ -131,16 +139,16 @@ class CoreSong:
         self.alt = {}
         for key in (self.name.keys() - ["variation"]):
             valueByName = self.name[key]
+            # Special case, we compare stem to standardFilestem
             if key == "stem":
-                # Special case, we compare stem to standardFilestem
                 if valueByName != self.standardFileStem:
                     self.alt[key] = self.standardFileStem
                     self.aligned = False
                     self.stemAligned = False
                 else:
                     self.alt[key] = ''
+            # Root directory not relevant for alignment check
             elif key != "rootDirectory" and key != "naming" :
-                # Root directory not relevant for alignment check
                 if key not in self.tags:
                     self.aligned = False
                     self.alt[key] = "(no tag)"
@@ -226,18 +234,18 @@ class CoreSong:
         else:
             if self.ext == "m4a" or self.ext == "wav" or self.ext == "ogg" or self.ext == "flac":
                 # eyed3 doesn't support some file types, so we'll use the taglib wrapper
-                info(f"... Saving tags for WAV : {self.filename}")
                 audiofile = taglib.File(self.filename)
-                audiofile.tags["ALBUM"] = self.album
-                audiofile.tags["ARTIST"] = self.artist
-                audiofile.tags["TITLE"] = self.title
+                audiofile.tags["ALBUM"] = [self.album]
+                audiofile.tags["ARTIST"] = [self.artist]
+                audiofile.tags["TITLE"] = [self.title]
+                info(f"... Saving tags for WAV : {self.filename}")
                 audiofile.save()
             else:
-                info(f"Saving tags for {self.filename}")
                 audiofile = eyed3.load(self.filename)
                 if audiofile is None:
                     warn(f"Can't load audio file {self.filename} with eyed3")
                 else:
+                    info(f"Saving tags for {self.filename}")
                     audiofile.tag.album = self.album
                     audiofile.tag.artist = self.artist
                     audiofile.tag.title = self.title
