@@ -12,6 +12,7 @@ class Storage:
         self.protoypes = {
             "ameta-root": self.storageDirectory + "/prototypes/ameta-root.yaml",
             "meta-artist": self.storageDirectory + "/prototypes/meta-artist.yaml",
+            "meta-artist-other": self.storageDirectory + "/prototypes/meta-artist-other.yaml",
             "meta-empty": self.storageDirectory + "/prototypes/meta-empty.yaml",
             "meta-naming-artist-and-title": self.storageDirectory + "/prototypes/meta-naming-title-and-artist.yaml",
             "mp3": self.storageDirectory + "/prototypes/Test000 - prototypes - Purpley.mp3"

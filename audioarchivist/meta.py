@@ -27,6 +27,7 @@ def _Meta__findMetaFiles(path, depth):
         if depth < MAXDEPTH :
             parentMetaFiles = _Meta__findMetaFiles(path.parent.resolve(), depth+1)
             metadataFiles.extend(parentMetaFiles['files'])
+            metadataFiles.reverse()
             return {
                 "files" : metadataFiles,
                 "rootDirectory" : parentMetaFiles["rootDirectory"]

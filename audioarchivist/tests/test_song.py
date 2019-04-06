@@ -83,7 +83,7 @@ class TestSong(TestCase):
     def test_song_naming(self):
         storage.tmp("meta-naming-artist-and-title", "meta/test/naming-title-and-artist/.ameta.yaml")
         song = Song(storage.tmpFilename("meta/test/naming-title-and-artist/my title - my artist.wav"))
-        self.assertEquals(song.artist, "my artist")
+        self.assertEqual(song.artist, "my artist")
         storage.tmp("meta-empty", "meta/test/naming-default/.ameta.yaml")
         song = Song(storage.tmpFilename("meta/test/naming-default/my title - my album - my artist.wav"))
-        self.assertEquals(song.artist, "my artist")
+        self.assertEqual(song.artist, "my artist")

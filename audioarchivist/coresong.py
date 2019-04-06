@@ -238,7 +238,7 @@ class CoreSong:
                 audiofile.tags["ALBUM"] = [self.album]
                 audiofile.tags["ARTIST"] = [self.artist]
                 audiofile.tags["TITLE"] = [self.title]
-                info(f"... Saving tags for WAV : {self.filename}")
+                info(f"... Saving tags for WAV {self.artist} : {self.filename}")
                 audiofile.save()
             else:
                 audiofile = eyed3.load(self.filename)
