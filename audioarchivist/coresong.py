@@ -187,36 +187,6 @@ class CoreSong:
         standardFilename = self.title
         return standardFilename
 
-    @property
-    def alternativePathsFromRoot(self):
-        global ALTERNATIVE_PATHS_FROM_ROOT
-        if ALTERNATIVE_PATHS_FROM_ROOT is None:
-            ALTERNATIVE_PATHS_FROM_ROOT = list(
-                map(
-                    lambda child : child.name + "/" + self.pathInCollection,
-                    filter(lambda f:
-                        not f.name.startswith(".") and f.is_dir(),
-                        self.rootDirectory.iterdir()
-                    )
-                )
-            )
-        return ALTERNATIVE_PATHS_FROM_ROOT
-
-    @property
-    def alternatives(self):
-        if self.collectionName is None:
-            return []
-        alternatives = []
-        for pathFromRoot in self.alternativePathsFromRoot:
-            if not pathFromRoot.startswith(self.collectionName + "/"):
-                for alternativeGlob in ALTERNATIVE_GLOBS:
-                    alternativeDirectory = self.rootDirectory.joinpath(pathFromRoot,self.standardFileTitleStem)
-                    globPattern = str(alternativeDirectory) + alternativeGlob
-                    alternativeFiles = glob.glob(globPattern)
-                    for alternativeFile in alternativeFiles:
-                        alternatives.append(CoreSong(alternativeFile, self.albumObject))
-        return alternatives
-
     def getFilenameInCollection(self,collection):
         return self.rootDirectory.joinpath(collection, self.pathInCollection, self.basename)
 
