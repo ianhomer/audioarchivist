@@ -25,7 +25,7 @@ class Collection:
         if not "song" in do:
             do["song"] = lambda o : None
 
-        self.processAlbum(
+        return self.processAlbum(
             Album(
                 self.directoryName,
                 byName = getattr(args, "byname", False)
@@ -35,6 +35,7 @@ class Collection:
     def processAlbum(self, album, do, args):
         lastPath = ""
         hasSongs = False
+        songCount = 0
 
         for a in album.alternatives:
             if a.hasSongs:
@@ -56,6 +57,7 @@ class Collection:
                     songs = a.songs
                     if len(a.songs) > 0:
                         hasSongs = True
+                        songCount += len(a.songs)
 
                     for song in songs:
                         self.processSong(song, do, args)
@@ -64,7 +66,9 @@ class Collection:
             do["album"](album.directoryName)
 
         for child in album.children:
-            self.processAlbum(child, do, args)
+            songCount += self.processAlbum(child, do, args)
+
+        return songCount
 
     def processSong(self, song, do, args):
         filesize = int(os.path.getsize(song.filename) / 1024)
