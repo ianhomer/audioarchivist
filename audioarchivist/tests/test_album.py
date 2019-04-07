@@ -95,8 +95,11 @@ class TestSongAlbum(TestCase):
         album = Album(storage.tmpFilename("meta-album-path-collections"))
         self.assertEqual(len(album.collections), 4)
         album = Album(storage.tmpFilename("meta-album-path-collections/collection-1/my-album-1"))
-        self.assertEqual(len(album.collections), 4)
+        self.assertEqual(len(album.collections), 3)
         self.assertEqual(len(album.alternatives), 3)
+
+        album = Album(storage.tmpFilename("meta-album-path-collections/collection-1"))
+        self.assertEqual(len(album.collections), 4)
 
         for filename in files:
             storage.tmpRemove(filename)

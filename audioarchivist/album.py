@@ -28,6 +28,10 @@ class Album:
                 self.collections = self.parent.collections
             else:
                 self.collections = sorted([f.name for f in Path(self.root).iterdir() if not f.name.startswith(".") and f.is_dir()])
+                # Optimise collections to only include collections that have alternatives provided.  These
+                # are collections that have relevant alternatives in place
+                if self.path.pathFromCollection:
+                    self.collections = list(map(lambda a:a.collectionName, self.alternatives))
 
     @property
     def alternatives(self):
