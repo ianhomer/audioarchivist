@@ -100,6 +100,9 @@ class TestSongAlbum(TestCase):
 
         album = Album(storage.tmpFilename("meta-album-path-collections/collection-1"))
         self.assertEqual(len(album.collections), 4)
+        child = next(a for a in album.children if a.name == "my-album-1")
+        self.assertEqual(len(child.collections), 3)
+
 
         for filename in files:
             storage.tmpRemove(filename)
