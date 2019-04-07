@@ -18,11 +18,15 @@ def run():
     parser.add_argument('-n', '--byname', action='store_true', help='Take metadata from file naming as precedence', default=False)
     parser.add_argument('-s', '--save', action='store_true', help='Save tags to audio file', default=False)
     parser.add_argument('-r', '--rename', action='store_true', help='Rename file to standard naming', default=False)
-    parser.add_argument('--root', action='store', help='Root path of meta scan', default='.')
+    parser.add_argument('root', nargs='*', help='Root path of meta scan')
     args = parser.parse_args()
-    return Collection(args.root).process({
-        "song"  : lambda o : print(o),
-        "header": lambda o : print(o),
-        "info"  : lambda o : info(o),
-        "em"    : lambda o : print(colored(o,"blue"))
-    }, args = args)
+    songCount = 0
+    roots = args.root if len(args.root) > 0 else ['.']
+    for root in roots:
+        songCount += Collection(root).process({
+            "song"  : lambda o : print(o),
+            "header": lambda o : print(o),
+            "info"  : lambda o : info(o),
+            "em"    : lambda o : print(colored(o,"blue"))
+        }, args = args)
+    return songCount
