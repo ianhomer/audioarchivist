@@ -28,7 +28,7 @@ class Collection:
         self.processAlbum(
             Album(
                 self.directoryName,
-                getattr(args, "byname", False)
+                byName = getattr(args, "byname", False)
             ), do, args
         )
 

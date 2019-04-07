@@ -6,12 +6,15 @@ from .coresong import CoreSong
 AUDIO_EXTENSIONS = [".flac", ".m4a", ".mp3", ".ogg", ".wav"]
 
 class Album:
-    def __init__(self, directoryName, byName = False):
+    def __init__(self, directoryName, parent = None, byName = False):
         self.directoryName = directoryName
         if not Path(directoryName).is_dir():
             raise Exception(f"Cannot create album from {directoryName} since not a directory")
-
-        self.byName = byName
+        self.parent = parent
+        if self.parent:
+            self.byName = self.parent.byName
+        else:
+            self.byName = byName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
         self.name = self.meta.album or path.stem
@@ -21,19 +24,25 @@ class Album:
         self.pathFromRoot = self.path.pathFromRoot
         self.collectionName = self.path.collectionName
         if not self.pathFromRoot is None:
-            self.collections = sorted([f.name for f in Path(self.root).iterdir() if not f.name.startswith(".") and f.is_dir()])
+            if self.parent:
+                self.collections = self.parent.collections
+            else:
+                self.collections = sorted([f.name for f in Path(self.root).iterdir() if not f.name.startswith(".") and f.is_dir()])
 
     @property
     def alternatives(self):
-        alternatives = []
-        if hasattr(self, "collections") and self.path.pathFromCollection:
-            for collectionName in self.collections:
-                alternativeDirectoryName = self.root.joinpath(collectionName,self.path.pathFromCollection).as_posix()
-                if Path(alternativeDirectoryName).is_dir():
-                    alternatives.append(Album(alternativeDirectoryName, byName = self.byName))
-            return alternatives
+        if hasattr(self,"_cached_alternatives"):
+            return self._cached_alternatives
         else:
-            return [self]
+            self._cached_alternatives = []
+            if hasattr(self, "collections") and self.path.pathFromCollection:
+                for collectionName in self.collections:
+                    alternativeDirectoryName = self.root.joinpath(collectionName,self.path.pathFromCollection).as_posix()
+                    if Path(alternativeDirectoryName).is_dir():
+                        self._cached_alternatives.append(Album(alternativeDirectoryName, self))
+            else:
+                self._cached_alternatives = [self]
+            return self._cached_alternatives
 
     @property
     def childDirectories(self):
@@ -49,7 +58,7 @@ class Album:
             for a in self.alternatives:
                 childDirectoryName = a.directoryName + "/" + name
                 if Path(childDirectoryName).is_dir():
-                    albums.append(Album(childDirectoryName, byName = self.byName))
+                    albums.append(Album(childDirectoryName, self))
 
         return albums
 
