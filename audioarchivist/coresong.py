@@ -24,49 +24,54 @@ from .logger import warn, info
 NA = "n/a"
 # Cache alternative paths from root, since we only support execution in one root directory
 ALTERNATIVE_PATHS_FROM_ROOT = None
-ALTERNATIVE_GLOBS = ["*.mp3","*.wav"]
 
 NAMING_TITLE_AND_ARTIST = "title-and-artist"
 
 def _CoreSong__getMetadataFromFile(filename):
     data = {}
     try:
-        tag = TinyTag.get(filename)
         ext = Path(filename).suffix[1:].lower()
-        if tag.artist is not None:
-            data["artist"] = tag.artist.rstrip('\0')
-        if tag.album is not None:
-            data["album"] = tag.album.rstrip('\0')
-        if tag.title is not None:
-            data["title"] = tag.title.rstrip('\0')
-        if tag.year is not None:
-            data["year"] = tag.year.rstrip('\0')
-        if tag.samplerate is not None:
-            data["samplerate"] = tag.samplerate
-        if tag.duration is not None:
-            data["duration"] = tag.duration
-        data["bitdepth"] = -1
-        if ext == "flac":
-            data["bitdepth"] = mutagen.File(filename).info.bits_per_sample
-            data["bitrate"] = tag.bitrate
-        elif ext == "wav":
-            data["bitdepth"] = wave.open(filename).getsampwidth() * 8
-            data["bitrate"] = tag.bitrate
-            audiofile = taglib.File(filename)
-            # Special case where tinytag couldn't extract tags for wav
-            if tag.album is None and "ALBUM" in audiofile.tags and audiofile.tags["ALBUM"][0] :
-                data["album"] = audiofile.tags["ALBUM"][0]
-            if tag.artist is None and "ARTIST" in audiofile.tags and audiofile.tags["ARTIST"][0] :
-                data["artist"] = audiofile.tags["ARTIST"][0]
-            if tag.title is None and "TITLE" in audiofile.tags and audiofile.tags["TITLE"][0] :
-                data["title"] = audiofile.tags["TITLE"][0]
-        elif tag.bitrate is None or tag.bitrate > 1000:
-            # some m4a files are coming in with bitrates > 300,000 and not matching
-            # ffmpeg output, so we'll use mutagen instead
-            audiofile = mutagen.File(filename)
-            data["bitrate"] = int(audiofile.info.bitrate / 1000)
-        else:
-            data["bitrate"] = tag.bitrate
+        if ext != "aac":
+            tag = TinyTag.get(filename)
+            if tag.artist is not None:
+                data["artist"] = tag.artist.rstrip('\0')
+            if tag.album is not None:
+                data["album"] = tag.album.rstrip('\0')
+            if tag.title is not None:
+                data["title"] = tag.title.rstrip('\0')
+            if tag.year is not None:
+                data["year"] = tag.year.rstrip('\0')
+            if tag.samplerate is not None:
+                data["samplerate"] = tag.samplerate
+            if tag.duration is not None:
+                data["duration"] = tag.duration
+            data["bitdepth"] = -1
+            if ext == "flac":
+                data["bitdepth"] = mutagen.File(filename).info.bits_per_sample
+                data["bitrate"] = tag.bitrate
+            elif ext == "wav":
+                try:
+                    # Doesn't work for some wav files, not sure why, for now we'll just catch
+                    # exception since noisy otherwise and doesn't really matter
+                    data["bitdepth"] = wave.open(filename).getsampwidth() * 8
+                except:
+                    data["bitdepth"] = -9
+                data["bitrate"] = tag.bitrate
+                audiofile = taglib.File(filename)
+                # Special case where tinytag couldn't extract tags for wav
+                if tag.album is None and "ALBUM" in audiofile.tags and audiofile.tags["ALBUM"][0] :
+                    data["album"] = audiofile.tags["ALBUM"][0]
+                if tag.artist is None and "ARTIST" in audiofile.tags and audiofile.tags["ARTIST"][0] :
+                    data["artist"] = audiofile.tags["ARTIST"][0]
+                if tag.title is None and "TITLE" in audiofile.tags and audiofile.tags["TITLE"][0] :
+                    data["title"] = audiofile.tags["TITLE"][0]
+            elif tag.bitrate is None or tag.bitrate > 1000:
+                # some m4a files are coming in with bitrates > 300,000 and not matching
+                # ffmpeg output, so we'll use mutagen instead
+                audiofile = mutagen.File(filename)
+                data["bitrate"] = int(audiofile.info.bitrate / 1000)
+            else:
+                data["bitrate"] = tag.bitrate
     except:
         print(f"Cannot parse {filename}")
         traceback.print_exc()
@@ -76,7 +81,7 @@ def _CoreSong__getMetadataFromFilename(album, filename):
     metadata = album.meta.data
     naming = album.songMetadata.get("naming", None)
     path = Path(filename)
-    parts = path.stem.split('-')
+    parts = path.stem.split(' - ')
     title = parts[0].strip()
     if naming == NAMING_TITLE_AND_ARTIST:
         artist = parts[1].strip() if len(parts) > 1 else "unknown"

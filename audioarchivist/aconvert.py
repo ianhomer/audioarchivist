@@ -3,13 +3,13 @@ import ffmpeg
 import os
 import sys
 
+from pathlib import Path
+
 from .format import Format
 from .logger import warn
 from .song import Song
 from .channels import Channels
 
-replace = False
-quiet = False
 MIN_BITRATE = 128
 
 def run():
@@ -22,6 +22,8 @@ def run():
     parser.add_argument('--bitrate', help='Set bit rate', default=None)
     parser.add_argument('--bitdepth', help='Set bit depth', default=None)
     parser.add_argument('--mono', help='Convert to mono', action='store_true', default=False)
+    parser.add_argument('--quiet', action='store_true', help='Quiet', default=False)
+    parser.add_argument('--replace', action='store_true', help='Replace existing files', default=False)
     parser.add_argument('--samplerate', help='Set sample rate (khz)', default=None)
     parser.add_argument('--seconds', help='Crop to number of seconds', default=None)
     parser.add_argument('--start', help='Start at given number of seconds', default=None)
@@ -40,10 +42,15 @@ def run():
         bitdepth = song.bitdepth if args.bitdepth is None else int(args.bitdepth)
         samplerate = song.samplerate if args.samplerate is None else int(args.samplerate)
 
+        if bitrate < 1:
+            bitrate = MIN_BITRATE
+
         if not args.nomin and bitrate < MIN_BITRATE:
             # Bitrate below MIN_BITRATE is limited value
             warn(f"Not converting to {bitrate} since below minumum allowed {MIN_BITRATE}")
             return
+
+
         if args.wav:
             destination = Format('wav', bitdepth = bitdepth, samplerate = samplerate)
         elif args.flac:
@@ -61,9 +68,11 @@ def run():
             title += " (" + str(destination.qualityAsString) + ")"
 
         if args.collection:
-            outFile=f"{song.rootDirectory}/{args.collection}/{song.pathInCollection}/{title} - {song.artist} - {song.album}.{destination.ext}"
+            outFile=f"{song.rootDirectory}/{args.collection}/{song.pathInCollection}/{title} - {song.album} - {song.artist}.{destination.ext}"
         else:
             outFile=f"./{title} - {song.artist} - {song.album}.{destination.ext}"
+
+        Path(outFile).parent.mkdir(parents = True, exist_ok = True)
 
         channels = Channels(1) if args.mono else Channels(2)
         ffmpegArgs = {
@@ -85,7 +94,7 @@ def run():
                 .filter_('loudnorm')
                 .output(outFile, **ffmpegArgs)
                 .run(**{
-                    'quiet':quiet,
-                    'overwrite_output':replace
+                    'quiet':args.quiet,
+                    'overwrite_output':args.replace
                 })
         )

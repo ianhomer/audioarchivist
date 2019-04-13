@@ -3,7 +3,7 @@ from pathlib import Path
 from .meta import Meta
 from .coresong import CoreSong
 
-AUDIO_EXTENSIONS = [".flac", ".m4a", ".mp3", ".ogg", ".wav"]
+AUDIO_EXTENSIONS = [".aac", ".flac", ".m4a", ".mp3", ".mp4", ".ogg", ".wav"]
 
 class Album:
     def __init__(self, directoryName, parent = None, byName = False):
@@ -78,7 +78,7 @@ class Album:
 
     @property
     def songFileNames(self):
-        return sorted([f.name for f in self.path.path.iterdir() if (not f.is_dir()) and f.suffix in AUDIO_EXTENSIONS])
+        return sorted([f.name for f in self.path.path.iterdir() if (not f.is_dir()) and f.suffix.lower() in AUDIO_EXTENSIONS])
 
     @property
     def songs(self):
