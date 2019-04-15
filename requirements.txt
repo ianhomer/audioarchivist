@@ -2,5 +2,5 @@ eyeD3==0.8.10
 hiyapyco==0.4.13
 mutagen==1.42.0
 #pytaglib==1.4.4
-tinytag==1.0.0
+tinytag==1.2.2
 termcolor==1.1.0
