@@ -222,12 +222,11 @@ class CoreSong:
                 else:
                     info(f"Saving tags for {self.filename}")
                     if audiofile.tag is None:
-                        warn(f"Can't save tag for file {self.filename} with eyed3")
-                    else:
-                        audiofile.tag.album = self.album
-                        audiofile.tag.artist = self.artist
-                        audiofile.tag.title = self.title
-                        audiofile.tag.save()
+                        audiofile.initTag()
+                    audiofile.tag.album = self.album
+                    audiofile.tag.artist = self.artist
+                    audiofile.tag.title = self.title
+                    audiofile.tag.save()
 
     def move(self, collection):
         source = self.filename
