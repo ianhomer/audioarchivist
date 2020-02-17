@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest import TestCase
 
 from audioarchivist.song import Song
-from storage import Storage
+from audioarchivist.tests.storage import Storage
 
 storage = Storage()
 

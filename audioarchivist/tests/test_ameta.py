@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 from unittest import TestCase, mock
 
-from storage import Storage
+from audioarchivist.tests.storage import Storage
 from audioarchivist.ameta import run
 
 storage = Storage()

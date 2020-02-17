@@ -4,7 +4,7 @@ from unittest import TestCase
 import audioarchivist.logger
 from audioarchivist.album import Album
 from audioarchivist.album import AlbumPath
-from storage import Storage
+from audioarchivist.tests.storage import Storage
 
 storage = Storage()
 def tmpFilename(filename):
