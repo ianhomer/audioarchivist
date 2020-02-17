@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 from .format import Format
-from .logger import warn
+from .logger import info,warn
 from .song import Song
 from .channels import Channels
 
@@ -53,10 +53,8 @@ def run():
         bitrate = 256 if song.bitrate > 256 else song.bitrate
         if args.bitrate is not None:
             bitrate = int(args.bitrate)
-        bitdepth = song.bitdepth if args.bitdepth is None
-          else int(args.bitdepth)
-        samplerate = song.samplerate if args.samplerate is None
-          else int(args.samplerate)
+        bitdepth = song.bitdepth if args.bitdepth is None else int(args.bitdepth)
+        samplerate = song.samplerate if args.samplerate is None else int(args.samplerate)
 
         if bitrate < 1:
             bitrate = MIN_BITRATE
@@ -77,7 +75,7 @@ def run():
 
         print(f"Converting audio file : {audioIn} : {song} {song.format}-> {destination}")
         if song.format == destination:
-            printf("No conversion necessary")
+            info("No conversion necessary")
             return
 
         title = song.title

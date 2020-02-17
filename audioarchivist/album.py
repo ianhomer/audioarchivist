@@ -16,9 +16,7 @@ class Album:
         else:
             self.byName = byName
         self.meta = Meta(directoryName)
-        self.artist = self.meta.song.artist
-          if self.meta.song is not None and hasattr(self.meta.song, "artist")
-          else None
+        self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
         self.name = self.meta.album
         self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data
                              else {}) or {}

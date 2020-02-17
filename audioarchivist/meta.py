@@ -57,7 +57,7 @@ class Meta:
             debug(f"{filename} is a directory")
             path = path.joinpath(METAFILENAME)
 
-        metadata = __loadMetadata(path, 0)
+        metadata = _Meta__loadMetadata(path, 0)
         self.data = metadata["data"]
         if self.data is None:
             self.data = {}
