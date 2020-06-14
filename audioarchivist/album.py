@@ -17,8 +17,9 @@ class Album:
             self.byName = byName
         self.meta = Meta(directoryName)
         self.artist = self.meta.song.artist if self.meta.song is not None and hasattr(self.meta.song, "artist") else None
-        self.name = self.meta.album or path.stem
-        self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data else {}) or {}
+        self.name = self.meta.album
+        self.songMetadata = (self.meta.data["song"] if "song" in self.meta.data
+                             else {}) or {}
         self.root = self.meta.data["rootDirectory"]
         self.path = AlbumPath(directoryName, self.root)
         self.pathFromRoot = self.path.pathFromRoot
@@ -27,10 +28,13 @@ class Album:
             if self.parent:
                 self.collections = self.parent.collections
             else:
-                self.collections = sorted([f.name for f in Path(self.root).iterdir() if not f.name.startswith(".") and f.is_dir()])
+                self.collections = sorted(
+                  [f.name for f in Path(self.root).iterdir()
+                    if not f.name.startswith(".") and f.is_dir()])
 
-            # Optimise collections to only include collections that have alternatives provided.  These
-            # are collections that have relevant alternatives in place
+            # Optimise collections to only include collections that have
+            # alternatives provided.  These are collections that have relevant
+            # alternatives in place
             if self.path.pathFromCollection:
                 self.collections = self.alternativeCollectionNames
 
@@ -38,7 +42,8 @@ class Album:
     def alternativeCollectionNames(self):
         alternativeCollectionNames = []
         for collectionName in self.collections:
-            alternativeDirectoryName = self.root.joinpath(collectionName,self.path.pathFromCollection).as_posix()
+            alternativeDirectoryName = self.root.joinpath(
+              collectionName,self.path.pathFromCollection).as_posix()
             if Path(alternativeDirectoryName).is_dir():
                 alternativeCollectionNames.append(collectionName)
         return alternativeCollectionNames
@@ -51,9 +56,11 @@ class Album:
             self._cached_alternatives = []
             if hasattr(self, "collections") and self.path.pathFromCollection:
                 for collectionName in self.collections:
-                    alternativeDirectoryName = self.root.joinpath(collectionName,self.path.pathFromCollection).as_posix()
+                    alternativeDirectoryName = self.root.joinpath(
+                      collectionName,self.path.pathFromCollection).as_posix()
                     if Path(alternativeDirectoryName).is_dir():
-                        self._cached_alternatives.append(Album(alternativeDirectoryName, self))
+                        self._cached_alternatives.append(Album(
+                          alternativeDirectoryName, self))
             else:
                 self._cached_alternatives = [self]
             return self._cached_alternatives
@@ -62,7 +69,9 @@ class Album:
     def childDirectories(self):
         childDirectories = []
         for a in self.alternatives:
-            childDirectories.extend([f.name for f in a.path.path.iterdir() if f.is_dir() and not f.name.startswith(".")])
+            childDirectories.extend([f.name for f in a.path.path.iterdir()
+                                     if f.is_dir()
+                                     and not f.name.startswith(".")])
         return sorted(set(childDirectories))
 
     @property
@@ -78,7 +87,9 @@ class Album:
 
     @property
     def songFileNames(self):
-        return sorted([f.name for f in self.path.path.iterdir() if (not f.is_dir()) and f.suffix.lower() in AUDIO_EXTENSIONS])
+        return sorted([f.name for f in self.path.path.iterdir()
+            if (not f.is_dir()) and f.suffix.lower()
+                        in AUDIO_EXTENSIONS])
 
     @property
     def songs(self):

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 from .format import Format
-from .logger import warn
+from .logger import info,warn
 from .song import Song
 from .channels import Channels
 
@@ -15,19 +15,33 @@ MIN_BITRATE = 128
 def run():
     parser = argparse.ArgumentParser(description='Convert audio files.')
     parser.add_argument('file', nargs='+', help='audio file')
-    parser.add_argument('-w', '--wav', action='store_true', help='Lossless audio, by converting to wav', default=False)
-    parser.add_argument('-f', '--flac', action='store_true', help='Lossless compress audio, by converting to flac', default=False)
-    parser.add_argument('-c', '--collection', help='Set collection name for output', default=None)
-    parser.add_argument('-v', '--variant', action='store_true', help='Add variant to title', default=False)
+    parser.add_argument('-w', '--wav', action='store_true',
+                        help='Lossless audio, by converting to wav',
+                        default=False)
+    parser.add_argument('-f', '--flac', action='store_true',
+                        help='Lossless compress audio, by converting to flac',
+                        default=False)
+    parser.add_argument('-c', '--collection',
+                        help='Set collection name for output', default=None)
+    parser.add_argument('-v', '--variant', action='store_true',
+                        help='Add variant to title', default=False)
     parser.add_argument('--bitrate', help='Set bit rate', default=None)
     parser.add_argument('--bitdepth', help='Set bit depth', default=None)
-    parser.add_argument('--mono', help='Convert to mono', action='store_true', default=False)
-    parser.add_argument('--quiet', action='store_true', help='Quiet', default=False)
-    parser.add_argument('--replace', action='store_true', help='Replace existing files', default=False)
-    parser.add_argument('--samplerate', help='Set sample rate (khz)', default=None)
-    parser.add_argument('--seconds', help='Crop to number of seconds', default=None)
-    parser.add_argument('--start', help='Start at given number of seconds', default=None)
-    parser.add_argument('--nomin', action='store_true', help="Don't enforce any minimum standards", default=False)
+    parser.add_argument('--mono', help='Convert to mono', action='store_true',
+                        default=False)
+    parser.add_argument('--quiet', action='store_true', help='Quiet',
+                        default=False)
+    parser.add_argument('--replace', action='store_true',
+                        help='Replace existing files', default=False)
+    parser.add_argument('--samplerate', help='Set sample rate (khz)',
+                        default=None)
+    parser.add_argument('--seconds', help='Crop to number of seconds',
+                        default=None)
+    parser.add_argument('--start', help='Start at given number of seconds',
+                        default=None)
+    parser.add_argument('--nomin', action='store_true',
+                        help="Don't enforce any minimum standards",
+                        default=False)
     args = parser.parse_args()
     for audioIn in args.file:
         print(f"Converting audio file : {audioIn}")
@@ -52,7 +66,8 @@ def run():
 
 
         if args.wav:
-            destination = Format('wav', bitdepth = bitdepth, samplerate = samplerate)
+            destination = Format('wav', bitdepth = bitdepth,
+                                 samplerate = samplerate)
         elif args.flac:
             destination = Format('flac', bitdepth = bitdepth)
         else:
@@ -60,7 +75,7 @@ def run():
 
         print(f"Converting audio file : {audioIn} : {song} {song.format}-> {destination}")
         if song.format == destination:
-            printf("No conversion necessary")
+            info("No conversion necessary")
             return
 
         title = song.title
