@@ -14,6 +14,7 @@ opinionated file naming, audio tagging and audio conversion.
 
 install
 
+    pip3 install -r requirements.txt
     pip3 install -e .
 
 report on audio meta data

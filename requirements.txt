@@ -1,6 +1,6 @@
-eyeD3==0.8.10
-hiyapyco==0.4.13
-mutagen==1.42.0
+eyeD3==0.9.4
+hiyapyco==0.4.16
+mutagen==1.44.0
 #pytaglib==1.4.4
-tinytag==1.2.2
+tinytag==1.4.0
 termcolor==1.1.0
