@@ -95,7 +95,7 @@ def run():
             **channels.ffmpegArgs,
             **song.ffmpegArgs
         }
-        ffmpegArgs['metadata:g:0']:f"title={title}"
+        ffmpegArgs['metadata:g:0']=f"title={title}"
         if args.seconds is not None:
             start = int(args.start) if args.start is not None else 0
             end = int(args.seconds) + start
