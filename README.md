@@ -7,8 +7,18 @@ opinionated file naming, audio tagging and audio conversion.
 
 ## Pre-requisites
 
+Install [taglib](https://taglib.org/), e.g. on mac
+
     brew install taglib
+
+And install the pytaglib python library
+
     pip3 install pytaglib
+
+If you want to use `aconvert` you'll also need [ffmpeg](https://ffmpeg.org/),
+e.g. on mac
+
+    brew install ffmpeg
 
 ## tl;dr
 
