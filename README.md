@@ -25,20 +25,6 @@ And convert an audio file to release format
 
     aconvert my.wav
 
-## Docs
-
-See supported command line arguments with
-
-    ameta -h
-    aconvert -h
-
-## Creating reference files for testings
-
-To create a variety of audio formats for testing. This helps to decide what
-format is best for your specific purpose.
-
-    atest
-
 ## Meta data configuration
 
 The meta data for the audio files can be taken from the file and directory
@@ -72,6 +58,22 @@ artist, album and song name in), then run
 
 Create a `meta-root.yaml` in the root directory of your audio files to provide
 support for collections.
+
+## Command line arguments
+
+See supported command line arguments with
+
+    ameta -h
+    aconvert -h
+
+## Creating variety of audio file formats for testings
+
+Create a variety of audio formats from a given audio file in a sub-directory
+called `Test`.
+
+    atest my.wav
+
+This can help you decide what format is best for your specific purpose.
 
 ## Running Tests
 
