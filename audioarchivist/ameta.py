@@ -18,7 +18,7 @@ def run():
     parser.add_argument('-n', '--byname', action='store_true', help='Take metadata from file naming as precedence', default=False)
     parser.add_argument('-s', '--save', action='store_true', help='Save tags to audio file', default=False)
     parser.add_argument('-r', '--rename', action='store_true', help='Rename file to standard naming', default=False)
-    parser.add_argument('root', nargs='*', help='Root path of meta scan')
+    parser.add_argument('root', nargs='*', help='Root path of audio files for meta scan')
     args = parser.parse_args()
     songCount = 0
     roots = args.root if len(args.root) > 0 else ['.']
