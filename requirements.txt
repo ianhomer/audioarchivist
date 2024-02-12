@@ -1,7 +1,7 @@
-eyeD3==0.9.4
+eyeD3==0.9.7
 ffmpeg-python==0.2.0
-hiyapyco==0.4.16
-mutagen==1.44.0
+hiyapyco==0.5.4
+mutagen==1.47.0
 #pytaglib==1.4.4
-tinytag==1.4.0
-termcolor==1.1.0
+tinytag==1.10.1
+termcolor==2.4.0
